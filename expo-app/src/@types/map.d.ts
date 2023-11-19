@@ -12,3 +12,9 @@ export type Location = {
     altitudeAccuracy: Number,
     speed: Number,
   }
+
+export type Place = {
+  id: string;
+  name: string;
+  description: string;
+}

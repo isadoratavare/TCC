@@ -3,13 +3,16 @@ import { StyleSheet, View } from "react-native";
 import Map from "./src/components/Map";
 
 import SearchBar from "./src/components/SearchBar";
+import { LocationProvider } from "./src/hooks/useLocation";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <SearchBar />
-      <Map />
-    </View>
+    <LocationProvider>
+      <View style={styles.container}>
+        <SearchBar />
+        <Map />
+      </View>
+    </LocationProvider>
   );
 }
 

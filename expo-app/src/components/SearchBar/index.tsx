@@ -1,34 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { View, TextInput, StyleSheet, FlatList, Text } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import useAutoCompleteService from "../../services/autoComplete";
+import useMapsServices from "../../services/maps";
 import { Place } from "../../@types/map";
+import RenderItem from "./components/RenderItem";
+import Separator from "./components/Separator";
 
 const SearchBar: React.FC = () => {
   const [search, setSearch] = useState<string>("");
-  const [autoCompleteList, setAutoCompleteList] = useState([]);
-  const { getAutoCompleteList } = useAutoCompleteService();
+  const [autoCompleteList, setAutoCompleteList] = useState<Place[]>([]);
+
+  const { getAutoCompleteList } = useMapsServices();
 
   useEffect(() => {
-    async function get() {
-      const autoComplete = getAutoCompleteList({ input: search });
-      setAutoCompleteList(await autoComplete);
+    if (search.trim() !== "") {
+      async function get() {
+        await getAutoCompleteList(search).then((res) =>
+          setAutoCompleteList(res)
+        );
+      }
+      get();
+      return
     }
-    get();
+    setAutoCompleteList([])
   }, [search]);
+  
+  function closeSearch() {
+    setSearch("");
+  }
   return (
-    <View
-      style={{
-        position: "absolute",
-        zIndex: 2,
-        top: 70,
-        left: 0,
-        width: "100%",
-        alignItems: "center",
-      }}
-    >
+    <View style={styles.searchContainer}>
       <View style={styles.container}>
-        <View style={styles.inputContainer}>
+        <View style={styles.textInputContainer}>
           <AntDesign
             name="search1"
             size={20}
@@ -48,14 +51,9 @@ const SearchBar: React.FC = () => {
 
       <FlatList
         data={autoCompleteList}
-        renderItem={({ item }: { item: Place }) => {
-          return <Text>{item.name}</Text>;
-        }}
-        contentContainerStyle={{
-          width: "80%",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+        renderItem={({ item }) => <RenderItem item={item} closeSearch={closeSearch}/>}
+        contentContainerStyle={styles.listContainer}
+        ItemSeparatorComponent={() => <Separator />}
       />
     </View>
   );
@@ -64,6 +62,14 @@ const SearchBar: React.FC = () => {
 export default SearchBar;
 
 const styles = StyleSheet.create({
+  searchContainer: {
+    position: "absolute",
+    zIndex: 2,
+    top: 70,
+    left: 0,
+    width: "100%",
+    alignItems: "center",
+  },
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -72,7 +78,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 65,
   },
-  inputContainer: {
+  textInputContainer: {
     flexDirection: "row",
     backgroundColor: "white",
     height: 55,
@@ -84,4 +90,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   input: { flex: 1, padding: 0, margin: 0 },
+  listContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+
+    borderRadius: 15,
+    width: 300,
+  },
 });

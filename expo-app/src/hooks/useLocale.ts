@@ -1,20 +1,19 @@
 import { useState } from "react";
 import * as Location from "expo-location";
 
-export type LocationHook = {
+export type LocaleHook = {
   location: Location.LocationObject | null,
   errorMsg: string,
-  getLocationAsync
-  : () => void,
+  getLocaleAsync: () => void,
 }
 
-export default function useLocation(): LocationHook {
+export default function useLocale(): LocaleHook {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
   const [errorMsg, setErrorMsg] = useState("");
 
-  async function getLocationAsync() {
+  async function getLocaleAsync() {
     const { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status !== "granted") {
@@ -29,6 +28,6 @@ export default function useLocation(): LocationHook {
   return {
     location,
     errorMsg,
-    getLocationAsync
+    getLocaleAsync
   }
 }

@@ -1,9 +1,9 @@
-import useAutoCompleteAPI from "../api/autoComplete";
+import useMapsAPI from "../api/maps";
 
-function useAutoCompleteService() {
-  const { getAutoComplete } = useAutoCompleteAPI();
+function useMapsService() {
+  const { getAutoComplete, getPlaceById } = useMapsAPI();
 
-  async function getAutoCompleteList({ input }: { input: string }) {
+  async function getAutoCompleteList(input: string) {
     const response = await getAutoComplete(input);
 
     const places = response?.predictions?.map(
@@ -22,7 +22,12 @@ function useAutoCompleteService() {
 
     return places;
   }
-  return { getAutoCompleteList };
+
+  async function getPlaceGeometry(id: string) {
+    const response = await getPlaceById(id);
+    return  response?.result?.geometry?.location;
+  }
+  return { getAutoCompleteList, getPlaceGeometry };
 }
 
-export default useAutoCompleteService;
+export default useMapsService;

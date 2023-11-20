@@ -1,32 +1,34 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import useLocation, { LocationHook } from "../hooks/useLocation";
+import useLocale, { LocaleHook } from "../hooks/useLocale";
+import { LocationContextProps, useLocation } from "../hooks/useLocation";
 
 const Map: React.FC = () => {
-  const { getLocationAsync, errorMsg, location } = useLocation() as LocationHook;
-  useEffect(() => {
-    getLocationAsync();
+  const { getLocaleAsync, errorMsg, location } = useLocale() as LocaleHook;
+  const { initialLocation } = useLocation() as LocationContextProps;
 
-  }, [ ])
+  useEffect(() => {
+    getLocaleAsync();
+  }, []);
+
   if (errorMsg) {
-    return <Text>{errorMsg}</Text>
+    return <Text>{errorMsg}</Text>;
   }
   if (location) {
+
+    const initial = {
+      latitude: location?.coords.latitude || 0,
+      longitude: location?.coords.longitude || 0,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    };
     return (
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: location?.coords.latitude || 0,
-          longitude: location?.coords.longitude || 0 ,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      >
+      <MapView style={styles.map} region={initialLocation || initial}>
         <Marker
           coordinate={{
-            latitude: location?.coords.latitude || 0,
-            longitude: location?.coords.longitude || 0,
+            latitude: initialLocation?.latitude || location?.coords.latitude || 0,
+            longitude: initialLocation?.longitude || location?.coords.longitude || 0,
           }}
           title="Minha Localização"
           description="Estou aqui!"

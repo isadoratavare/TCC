@@ -1,75 +1,31 @@
-import React, { useEffect, useState } from "react";
-import MapView, { Marker } from "react-native-maps";
-import { StyleSheet, Text, View } from "react-native";
-import * as Location from 'expo-location';
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import Map from "./src/components/Map";
 
+import SearchBar from "./src/components/SearchBar";
+import { LocationProvider } from "./src/hooks/useLocation";
 
 export default function App() {
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function getLocationAsync() {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-
-      if (status !== 'granted') {
-        setErrorMsg('Permissão para acessar a localização negada');
-        return;
-      }
-
-      const location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    }
-
-    getLocationAsync();
-  }, []);
-
-  if (errorMsg) {
-    return (
+  return (
+    <LocationProvider>
       <View style={styles.container}>
-        <Text>{errorMsg}</Text>
+        <SearchBar />
+        <Map />
       </View>
-    );
-  } else if (location) {
-    return (
-      <View style={styles.container}>
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        >
-          <Marker
-            coordinate={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            }}
-            title="Minha Localização"
-            description="Estou aqui!"
-          />
-        </MapView>
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.container}>
-        <Text>Carregando...</Text>
-      </View>
-    );
-  }
+    </LocationProvider>
+  );
 }
-
-
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: "relative",
   },
   map: {
+    position: "relative",
+    zIndex: 1,
     width: "100%",
     height: " 100%",
   },
 });
+

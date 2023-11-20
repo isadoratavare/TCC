@@ -24,6 +24,8 @@ export type Place = {
 export type Pin =  {
   latitude: number;
   longitude: number;
+  latitudeDelta: number;
+  longitudeDelta: number;
   label: string;
   place_id: string;
 }

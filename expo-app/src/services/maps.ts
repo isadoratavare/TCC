@@ -25,7 +25,16 @@ function useMapsService() {
 
   async function getPlaceGeometry(id: string) {
     const response = await getPlaceById(id);
-    return  response?.result?.geometry?.location;
+
+    const { location, viewport } = response?.result?.geometry;
+    return {
+      id: id,
+      name: response.result.address_components[0].long_name,
+      latitude: location?.lat,
+      longitude: location?.lng,
+      latitudeDelta: Math.abs(viewport.northeast.lat - viewport.southwest.lat),
+      longitudeDelta: Math.abs(viewport.northeast.lng - viewport.southwest.lng),
+    };
   }
   return { getAutoCompleteList, getPlaceGeometry };
 }

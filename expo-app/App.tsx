@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
 import Map from "./src/components/Map";
 
 import SearchBar from "./src/components/SearchBar";
 import { LocationProvider } from "./src/hooks/useLocation";
+
 import ModalBottom from "./src/components/ModalBottom";
+import ImageGallery from "./src/components/ImageGallery";
 import { Pin } from "./src/@types/map";
 
 export default function App() {
@@ -26,7 +28,7 @@ export default function App() {
       </View>
       {isModalOpen && (
         <ModalBottom isOpen={isModalOpen} setOpen={setIsModalOpen}>
-          <Text>{modalMarker?.label}</Text>
+          <ImageGallery />
         </ModalBottom>
       )}
     </LocationProvider>

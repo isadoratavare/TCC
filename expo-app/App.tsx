@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import Map from "./src/components/Map";
 
@@ -10,19 +10,22 @@ import { Pin } from "./src/@types/map";
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMarker, setModalMarker] = useState<Pin | null>();
+
   return (
     <LocationProvider>
       <View style={styles.container}>
         <SearchBar />
         <Map
           onPressMarker={(marker: Pin) => {
-            setIsModalOpen((prevState) => !prevState);
+            if (!isModalOpen) {
+              setIsModalOpen(true);
+            }
             setModalMarker(marker);
           }}
         />
       </View>
       {isModalOpen && (
-        <ModalBottom>
+        <ModalBottom isOpen={isModalOpen} setOpen={setIsModalOpen}>
           <Text>{modalMarker?.label}</Text>
         </ModalBottom>
       )}

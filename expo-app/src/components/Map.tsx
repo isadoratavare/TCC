@@ -4,7 +4,7 @@ import MapView, { Marker } from "react-native-maps";
 import useLocale, { LocaleHook } from "../hooks/useLocale";
 import { LocationContextProps, useLocation } from "../hooks/useLocation";
 import { Pin } from "../@types/map";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import DecentralizedButton from "./DecentralizedButton";
 
 type MapRefType = MapView | null;
 
@@ -54,27 +54,14 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
               }}
               title={pin.label}
               description=""
-              onPress={() => onPressMarker(pin)}
+              onPress={() => {
+                onPressMarker(pin)
+              }}
+
             ></Marker>
           );
         })}
-        <TouchableOpacity
-          style={{
-            width: 50,
-            height: 50,
-            backgroundColor: "white",
-            margin: 20,
-            borderRadius: 20,
-            justifyContent: "center",
-            alignItems: "center",
-            borderWidth: 1,
-            borderColor: "gray"
-          }}
-          onPress={() => openZoomMap()}
-        >
-          <MaterialCommunityIcons name="fullscreen-exit" size={24} color="black" />
-
-        </TouchableOpacity>
+        <DecentralizedButton openZoomMap={openZoomMap}/>
       </MapView>
     );
   }

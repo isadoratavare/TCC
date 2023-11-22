@@ -2,14 +2,13 @@ import React, { useState } from "react";
 
 import { Modal, View, StyleSheet, TouchableOpacity } from "react-native";
 
-const ModalBottom: React.FC<{children: any}> = ({children}) => {
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+const ModalBottom: React.FC<{children: any, isOpen: boolean, setOpen: any}> = ({children, isOpen, setOpen}) => {
   return (
     <Modal transparent={true} visible={isOpen} >
       <TouchableOpacity
         style={styles.centeredView}
         onPress={() => {
-            setIsOpen(prevState => !prevState)
+            setOpen((prevState: boolean) => !prevState)
         }}
       />
       <View style={{ position: "absolute", width: "100%", bottom: 0 }}>

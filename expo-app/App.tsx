@@ -1,17 +1,31 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View, Text } from "react-native";
 import Map from "./src/components/Map";
 
 import SearchBar from "./src/components/SearchBar";
 import { LocationProvider } from "./src/hooks/useLocation";
+import ModalBottom from "./src/components/ModalBottom";
+import { Pin } from "./src/@types/map";
 
 export default function App() {
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [modalMarker, setModalMarker] = useState<Pin | null>();
   return (
     <LocationProvider>
       <View style={styles.container}>
         <SearchBar />
-        <Map />
+        <Map
+          onPressMarker={(marker: Pin) => {
+            setIsModalOpen((prevState) => !prevState);
+            setModalMarker(marker);
+          }}
+        />
       </View>
+      {isModalOpen && (
+        <ModalBottom>
+          <Text>{modalMarker?.label}</Text>
+        </ModalBottom>
+      )}
     </LocationProvider>
   );
 }
@@ -28,4 +42,3 @@ const styles = StyleSheet.create({
     height: " 100%",
   },
 });
-

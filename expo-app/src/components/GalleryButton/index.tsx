@@ -13,7 +13,9 @@ const GalleryButton: React.FC<{
         borderColor: "gray",
         borderRadius: 10,
         padding: 10,
+        marginHorizontal: 5,
         width: 100,
+        height: 100,
         alignItems: "center",
         justifyContent: "center",
       }}

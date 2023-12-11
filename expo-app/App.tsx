@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, Text, View } from "react-native";
 import Map from "./src/components/Map";
 
 import SearchBar from "./src/components/SearchBar";
@@ -7,18 +7,38 @@ import { LocationProvider } from "./src/hooks/useLocation";
 
 import ModalBottom from "./src/components/ModalBottom";
 import ImageGallery from "./src/components/ImageGallery";
+import CameraView from "./src/components/CameraView";
 import { Pin } from "./src/@types/map";
 import { ImageGalleryProvider } from "./src/hooks/useImageGallery";
+import { Camera } from "expo-camera";
 
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMarker, setModalMarker] = useState<Pin | null>();
 
+  const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
+  
+  let camera: Camera | null;
+
+  const __startCamera = async () => {
+    const { status } = await Camera.requestPermissionsAsync();
+    if (status === "granted") {
+      setIsCameraOpen(true);
+    } else {
+      Alert.alert("Access denied");
+      setIsCameraOpen(false);
+    }
+  };
+
+  if (isCameraOpen) {
+    return (
+      <CameraView />
+    );
+  }
   return (
     <LocationProvider>
       <ImageGalleryProvider>
         <View style={styles.container}>
-          <SearchBar />
           <Map
             onPressMarker={(marker: Pin) => {
               if (!isModalOpen) {
@@ -30,7 +50,10 @@ export default function App() {
         </View>
         {isModalOpen && (
           <ModalBottom isOpen={isModalOpen} setOpen={setIsModalOpen}>
-            <ImageGallery placeId={modalMarker?.place_id || ""} />
+            <ImageGallery
+              placeId={modalMarker?.place_id || ""}
+              openCamera={__startCamera}
+            />
           </ModalBottom>
         )}
       </ImageGalleryProvider>
@@ -41,11 +64,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: "relative",
   },
   map: {
-    position: "relative",
-    zIndex: 1,
     width: "100%",
     height: " 100%",
   },

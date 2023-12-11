@@ -17,6 +17,9 @@ const DecentralizedButton: React.FC<{ openZoomMap: () => void }> = ({
         alignItems: "center",
         borderWidth: 1,
         borderColor: "gray",
+        position: "absolute",
+        bottom: 0,
+        right: 0
       }}
       onPress={() => openZoomMap()}
     >

@@ -5,6 +5,7 @@ import useLocale, { LocaleHook } from "../hooks/useLocale";
 import { LocationContextProps, useLocation } from "../hooks/useLocation";
 import { Pin } from "../@types/map";
 import DecentralizedButton from "./DecentralizedButton";
+import SearchBar from "./SearchBar";
 
 type MapRefType = MapView | null;
 
@@ -39,40 +40,41 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
       longitudeDelta: 0.0421,
     };
     return (
-      <MapView
-        style={styles.map}
-        region={initialLocation || initial}
-        ref={mapRef}
-      >
-        {pins.map((pin: Pin) => {
-          return (
-            <Marker
-              key={pin.place_id}
-              coordinate={{
-                latitude: pin?.latitude || 0,
-                longitude: pin?.longitude || location?.coords.longitude || 0,
-              }}
-              title={pin.label}
-              description=""
-              onPress={() => {
-                onPressMarker(pin)
-              }}
-
-            ></Marker>
-          );
-        })}
-        <DecentralizedButton openZoomMap={openZoomMap}/>
-      </MapView>
+      <View style={[StyleSheet.absoluteFillObject, { flex: 1 }]}>
+        <MapView
+          style={[styles.map, StyleSheet.absoluteFillObject]}
+          region={initialLocation || initial}
+          ref={mapRef}
+        >
+          {pins.map((pin: Pin) => {
+            return (
+              <Marker
+                key={pin.place_id}
+                coordinate={{
+                  latitude: pin?.latitude || 0,
+                  longitude: pin?.longitude || location?.coords.longitude || 0,
+                }}
+                title={pin.label}
+                description=""
+                onPress={() => {
+                  onPressMarker(pin);
+                }}
+              />
+            );
+          })}
+        </MapView>
+        <SearchBar />
+        <DecentralizedButton openZoomMap={openZoomMap} />
+      </View>
     );
   }
+  return <></>;
 };
 const styles = StyleSheet.create({
   map: {
     flex: 1,
     width: "100%",
     height: " 100%",
-    justifyContent: "flex-end",
-    alignItems: "flex-end",
   },
 });
 

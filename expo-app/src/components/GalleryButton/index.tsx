@@ -2,7 +2,7 @@ import { TouchableOpacity, Text } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 
 const GalleryButton: React.FC<{
-  icon: "insert-photo" | "add-photo-alternate";
+  icon: "insert-photo" | "add-photo-alternate" | "camera-alt";
   name: string;
   onPress: () => void;
 }> = ({ icon, name, onPress }) => {

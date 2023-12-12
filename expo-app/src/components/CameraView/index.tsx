@@ -5,46 +5,76 @@ import {
   TouchableOpacity,
   View,
   StyleSheet,
+  Modal,
 } from "react-native";
 import CameraPreview from "./components/CameraPreview";
+import {
+  ImageGalleryContextProps,
+  useImageGallery,
+} from "../../hooks/useImageGallery";
 
-const CameraView: React.FC = () => {
+const CameraView: React.FC<{ onClose?: () => void; placeId: string }> = ({
+  onClose,
+  placeId,
+}) => {
   let camera: Camera | null;
+
   const [showPreview, setShowPreview] = useState(false);
   const [photo, setPhoto] = useState<CameraCapturedPicture>();
 
-  async function takePicture(event: GestureResponderEvent) {
+  const { addImageByCamera } = useImageGallery() as ImageGalleryContextProps;
+
+  async function takePicture() {
     if (!camera) return;
-    const photo = await camera.takePictureAsync();
-    console.log(photo);
+     await camera
+      .takePictureAsync()
+      .then((e) => setPhoto(e))
+      .catch((e) => console.log(e));
+
     setShowPreview(true);
-    setPhoto(photo);
   }
 
   if (showPreview && photo) {
-    return <CameraPreview photo={photo} />;
+    return (
+      <CameraPreview
+        photo={photo}
+        confirmPhoto={() => {
+          if (photo) {
+            addImageByCamera(placeId, photo);
+          }
+          setShowPreview(false);
+          onClose && onClose()
+          console.log("Photo has been added");
+        }}
+        cancelPhoto={() => {
+          setShowPreview(false);
+        }}
+      />
+    );
   }
 
   return (
-    <Camera
-      style={styles.container}
-      ref={(r) => {
-        camera = r;
-      }}
-    >
-      <View style={styles.button}>
-        <View style={styles.btnContainer}>
-          <TouchableOpacity onPress={takePicture} style={styles.btn} />
+    <Modal visible={true} transparent animationType="slide">
+      <Camera
+        style={styles.container}
+        ref={(r) => {
+          camera = r;
+        }}
+      >
+        <View style={styles.button}>
+          <View style={styles.btnContainer}>
+            <TouchableOpacity onPress={takePicture} style={styles.btn} />
+          </View>
         </View>
-      </View>
-    </Camera>
+      </Camera>
+    </Modal>
   );
 };
 
 export default CameraView;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, width: "100%" },
+  container: { flex: 1, justifyContent: "center", alignItems: "center" },
   button: {
     position: "absolute",
     bottom: 0,

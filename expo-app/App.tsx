@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Alert, StyleSheet, Text, View } from "react-native";
 import Map from "./src/components/Map";
 
-import SearchBar from "./src/components/SearchBar";
 import { LocationProvider } from "./src/hooks/useLocation";
 
 import ModalBottom from "./src/components/ModalBottom";
@@ -20,7 +19,7 @@ export default function App() {
   
   let camera: Camera | null;
 
-  const __startCamera = async () => {
+  const openCamera = async () => {
     const { status } = await Camera.requestPermissionsAsync();
     if (status === "granted") {
       setIsCameraOpen(true);
@@ -30,11 +29,7 @@ export default function App() {
     }
   };
 
-  if (isCameraOpen) {
-    return (
-      <CameraView />
-    );
-  }
+  
   return (
     <LocationProvider>
       <ImageGalleryProvider>
@@ -52,7 +47,7 @@ export default function App() {
           <ModalBottom isOpen={isModalOpen} setOpen={setIsModalOpen}>
             <ImageGallery
               placeId={modalMarker?.place_id || ""}
-              openCamera={__startCamera}
+              openCamera={openCamera}
             />
           </ModalBottom>
         )}

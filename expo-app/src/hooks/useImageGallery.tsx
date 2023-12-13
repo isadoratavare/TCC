@@ -46,11 +46,7 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   }
   async function addImageByGallery(placeId: string) {
     if (await hasPermissionGallery()) {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        quality: 1,
-      });
+      const result = await ImagePicker.launchImageLibraryAsync()
       console.log(result);
       if (!result.canceled) {
         addImage(placeId, result.assets[0].uri);

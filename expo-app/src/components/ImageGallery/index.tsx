@@ -21,12 +21,12 @@ const ImageGallery: React.FC<{ placeId: string; openCamera: () => void }> = ({
 
   const photosData = photos.filter((photo) => photo.id === placeId)[0];
 
-  useEffect(() => {
-    async function getPermission() {
-      if (isCameraOpen && permission?.status === 'undetermined') {
-        await requestPermission();
-      }
+  async function getPermission() {
+    if (isCameraOpen && permission?.canAskAgain) {
+      await requestPermission();
     }
+  }
+  useEffect(() => {
     getPermission()
   }, [isCameraOpen])
 

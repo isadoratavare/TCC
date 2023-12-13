@@ -20,11 +20,11 @@ const SearchBar: React.FC = () => {
         );
       }
       get();
-      return
+      return;
     }
-    setAutoCompleteList([])
+    setAutoCompleteList([]);
   }, [search]);
-  
+
   function closeSearch() {
     setSearch("");
   }
@@ -51,7 +51,9 @@ const SearchBar: React.FC = () => {
 
       <FlatList
         data={autoCompleteList}
-        renderItem={({ item }) => <RenderItem item={item} closeSearch={closeSearch}/>}
+        renderItem={({ item }) => (
+          <RenderItem item={item} closeSearch={closeSearch} />
+        )}
         contentContainerStyle={styles.listContainer}
         ItemSeparatorComponent={() => <Separator />}
       />
@@ -64,9 +66,7 @@ export default SearchBar;
 const styles = StyleSheet.create({
   searchContainer: {
     position: "absolute",
-    zIndex: 2,
     top: 70,
-    left: 0,
     width: "100%",
     alignItems: "center",
   },
@@ -96,6 +96,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
 
     borderRadius: 15,
-    width: 300,
+    width: "95%",
   },
 });

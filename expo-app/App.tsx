@@ -6,7 +6,6 @@ import { LocationProvider } from "./src/hooks/useLocation";
 
 import ModalBottom from "./src/components/ModalBottom";
 import ImageGallery from "./src/components/ImageGallery";
-import CameraView from "./src/components/CameraView";
 import { Pin } from "./src/@types/map";
 import { ImageGalleryProvider } from "./src/hooks/useImageGallery";
 import { Camera } from "expo-camera";

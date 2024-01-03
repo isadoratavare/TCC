@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import useLocale, { LocaleHook } from "../hooks/useLocale";
 import { LocationContextProps, useLocation } from "../hooks/useLocation";
@@ -13,7 +13,8 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
   onPressMarker,
 }) => {
   const { getLocaleAsync, errorMsg, location } = useLocale() as LocaleHook;
-  const { initialLocation, pins } = useLocation() as LocationContextProps;
+  const { initialLocation, pins } =
+    useLocation() as LocationContextProps;
   const mapRef = useRef<MapRefType>(null);
 
   function openZoomMap() {

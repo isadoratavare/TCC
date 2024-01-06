@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Camera, CameraCapturedPicture } from "expo-camera";
 import {
-  GestureResponderEvent,
   TouchableOpacity,
   View,
   StyleSheet,

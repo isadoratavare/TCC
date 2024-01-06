@@ -1,6 +1,7 @@
-import React, { ReactNode, createContext, useContext, useState } from "react";
+import React, { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { Camera, CameraCapturedPicture } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
+import { MetricsContextProps, useMetrics } from "./useMetrics";
 
 export interface ImageGalleryContextProps {
   photos: { id: string; uris: string[] }[];
@@ -18,12 +19,22 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   const [photoUri, setPhotoUri] = useState<{ id: string; uris: string[] }[]>(
     []
   );
+  const [permission, setPermission] = useState<boolean>(false);
+  const { getTimeData, addNewValueToJSON } =
+    useMetrics() as MetricsContextProps;
   async function hasPermissionGallery() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const timeInMilliseconds = getTimeData("getGalleryPermission", async () => {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    return status === "granted";
+      setPermission(status === "granted");
+    });
+
+    const content = JSON.stringify(timeInMilliseconds, null, 2);
+
+    addNewValueToJSON(content, "gallery");
   }
-  
+
   async function addImage(placeId: string, uri: string) {
     console.log("addImage", placeId, uri);
 
@@ -45,8 +56,8 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
   async function addImageByGallery(placeId: string) {
-    if (await hasPermissionGallery()) {
-      const result = await ImagePicker.launchImageLibraryAsync()
+    if (permission) {
+      const result = await ImagePicker.launchImageLibraryAsync();
       console.log(result);
       if (!result.canceled) {
         addImage(placeId, result.assets[0].uri);
@@ -59,6 +70,10 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   ) {
     addImage(placeId, photo.uri);
   }
+
+  useEffect(() => {
+    hasPermissionGallery()
+  },[])
   return (
     <ImageGalleryContext.Provider
       value={{ addImageByGallery, photos: photoUri, addImageByCamera }}

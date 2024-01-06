@@ -6,18 +6,21 @@ import {
   useImageGallery,
 } from "../../hooks/useImageGallery";
 import CameraView from "../CameraView";
-import { Camera } from "expo-camera";
+import { Camera, PermissionResponse } from "expo-camera";
+import { MetricsContextProps, useMetrics } from "../../hooks/useMetrics";
 
 const ImageGallery: React.FC<{ placeId: string; openCamera: () => void }> = ({
   placeId,
 }) => {
   const [cameraOrGalleryModalOpen, setCameraOrGalleryModalOpen] =
     useState<boolean>(false);
-    const [permission, requestPermission] = Camera.useCameraPermissions();
+  const [permission, requestPermission] = Camera.useCameraPermissions();
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
 
   const { addImageByGallery, photos } =
     useImageGallery() as ImageGalleryContextProps;
+  const { getTimeData, addNewValueToJSON } =
+    useMetrics() as MetricsContextProps;
 
   const photosData = photos.filter((photo) => photo.id === placeId)[0];
 
@@ -27,14 +30,27 @@ const ImageGallery: React.FC<{ placeId: string; openCamera: () => void }> = ({
     }
   }
   useEffect(() => {
-    getPermission()
-  }, [isCameraOpen])
+    getPermission();
+  }, [isCameraOpen]);
 
+  if (isCameraOpen) {
+    const timeInMilliseconds = getTimeData("getCameraPermission", () => {
+      const { granted } = permission as PermissionResponse;
 
-  if (isCameraOpen && permission?.granted) {
-    return (
-      <CameraView placeId={placeId} onClose={() => setIsCameraOpen(false)}/>
-    );
+      if (granted) {
+        return (
+          <CameraView
+            placeId={placeId}
+            onClose={() => setIsCameraOpen(false)}
+          />
+        );
+      } else {
+        getPermission();
+      }
+    });
+    const content = JSON.stringify(timeInMilliseconds, null, 2);
+
+    addNewValueToJSON(content, "camera");
   }
 
   return (
@@ -102,8 +118,8 @@ const ImageGallery: React.FC<{ placeId: string; openCamera: () => void }> = ({
               <GalleryButton
                 icon="camera-alt"
                 name="Câmera"
-                onPress={ () => {
-                  setIsCameraOpen(true)
+                onPress={() => {
+                  setIsCameraOpen(true);
                   setCameraOrGalleryModalOpen(false);
                 }}
               />

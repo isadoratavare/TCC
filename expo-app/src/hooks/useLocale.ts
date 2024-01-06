@@ -1,7 +1,6 @@
 import { useState } from "react";
 import * as Location from "expo-location";
-import performance from "react-native-performance";
-import { LocationContextProps, useLocation } from "./useLocation";
+import { MetricsContextProps, useMetrics } from "./useMetrics";
 
 export type LocaleHook = {
   location: Location.LocationObject | null;
@@ -14,26 +13,28 @@ export default function useLocale(): LocaleHook {
     null
   );
   const [errorMsg, setErrorMsg] = useState("");
-  const { appendDataToJsonArray } = useLocation() as LocationContextProps; 
-  
+  const { getTimeData, addNewValueToJSON } =
+    useMetrics() as MetricsContextProps;
+
   async function getLocaleAsync() {
-    performance.mark("getLocationPermission");
+    const timeInMilliseconds = getTimeData(
+      "getLocationPermission",
+      async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
 
-    const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          setErrorMsg("Permissão para acessar a localização negada");
+          return;
+        }
 
-    if (status !== "granted") {
-      setErrorMsg("Permissão para acessar a localização negada");
-      return;
-    }
+        const location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
+      }
+    );
 
-    const location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
+    const content = JSON.stringify(timeInMilliseconds, null, 2);
 
-    performance.measure("myMeasure", "getLocationPermission");
-    
-    const data = performance.getEntriesByName("myMeasure");
-    const content = JSON.stringify(data[0].duration , null, 2);
-    appendDataToJsonArray(content)
+    addNewValueToJSON(content, "location");
   }
 
   return {

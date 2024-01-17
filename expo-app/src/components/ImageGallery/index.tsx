@@ -1,57 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FlatList, View, Image, Modal, Text } from "react-native";
+import React, { useState } from "react";
+import { FlatList, View, Image, Modal } from "react-native";
 import GalleryButton from "../GalleryButton";
 import {
   ImageGalleryContextProps,
   useImageGallery,
 } from "../../hooks/useImageGallery";
-import CameraView from "../CameraView";
-import { Camera, PermissionResponse } from "expo-camera";
-import { MetricsContextProps, useMetrics } from "../../hooks/useMetrics";
 
 const ImageGallery: React.FC<{ placeId: string; openCamera: () => void }> = ({
   placeId,
 }) => {
   const [cameraOrGalleryModalOpen, setCameraOrGalleryModalOpen] =
     useState<boolean>(false);
-  const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
 
-  const { addImageByGallery, photos } =
+  const { addImageByGallery, photos, addImageByCamera } =
     useImageGallery() as ImageGalleryContextProps;
-  const { getTimeData, addNewValueToJSON } =
-    useMetrics() as MetricsContextProps;
 
   const photosData = photos.filter((photo) => photo.id === placeId)[0];
-
-  async function getPermission() {
-    if (isCameraOpen && permission?.canAskAgain) {
-      await requestPermission();
-    }
-  }
-  useEffect(() => {
-    getPermission();
-  }, [isCameraOpen]);
-
-  if (isCameraOpen) {
-    const timeInMilliseconds = getTimeData("getCameraPermission", () => {
-      const { granted } = permission as PermissionResponse;
-
-      if (granted) {
-        return (
-          <CameraView
-            placeId={placeId}
-            onClose={() => setIsCameraOpen(false)}
-          />
-        );
-      } else {
-        getPermission();
-      }
-    });
-    const content = JSON.stringify(timeInMilliseconds, null, 2);
-
-    addNewValueToJSON(content, "camera");
-  }
 
   return (
     <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
@@ -119,8 +83,8 @@ const ImageGallery: React.FC<{ placeId: string; openCamera: () => void }> = ({
                 icon="camera-alt"
                 name="Câmera"
                 onPress={() => {
-                  setIsCameraOpen(true);
                   setCameraOrGalleryModalOpen(false);
+                  addImageByCamera(placeId);
                 }}
               />
             </View>

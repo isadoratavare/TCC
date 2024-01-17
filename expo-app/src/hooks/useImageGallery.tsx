@@ -1,12 +1,17 @@
-import React, { ReactNode, createContext, useContext, useEffect, useState } from "react";
-import { Camera, CameraCapturedPicture } from "expo-camera";
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import * as ImagePicker from "expo-image-picker";
 import { MetricsContextProps, useMetrics } from "./useMetrics";
 
 export interface ImageGalleryContextProps {
   photos: { id: string; uris: string[] }[];
   addImageByGallery: (placeId: string) => void;
-  addImageByCamera: (placeId: string, photo: CameraCapturedPicture) => void;
+  addImageByCamera: (placeId: string) => void;
 }
 
 const ImageGalleryContext = createContext<ImageGalleryContextProps | undefined>(
@@ -22,6 +27,7 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   const [permission, setPermission] = useState<boolean>(false);
   const { getTimeData, addNewValueToJSON } =
     useMetrics() as MetricsContextProps;
+
   async function hasPermissionGallery() {
     const timeInMilliseconds = getTimeData("getGalleryPermission", async () => {
       const { status } =
@@ -34,7 +40,6 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
 
     addNewValueToJSON(content, "gallery");
   }
-
   async function addImage(placeId: string, uri: string) {
     console.log("addImage", placeId, uri);
 
@@ -66,14 +71,50 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   }
   async function addImageByCamera(
     placeId: string,
-    photo: CameraCapturedPicture
   ) {
-    addImage(placeId, photo.uri);
+    // addImage(placeId, photo.uri);
+    /*
+      if (isCameraOpen) {
+    const timeInMilliseconds = getTimeData("getCameraPermission", () => {
+      const { granted } = permission as PermissionResponse;
+
+      if (granted) {
+        return (
+          <CameraView
+            placeId={placeId}
+            onClose={() => setIsCameraOpen(false)}
+          />
+        );
+      } else {
+        getPermission();
+      }
+    });
+    const content = JSON.stringify(timeInMilliseconds, null, 2);
+     addNewValueToJSON(content, "camera");
+    */
+
+    let photoUri;
+
+    let permission = await ImagePicker.getCameraPermissionsAsync();
+
+    if (!permission.granted) {
+      permission = await ImagePicker.requestCameraPermissionsAsync();
+    }
+
+    if (permission.granted) {
+      const photo = (await ImagePicker.launchCameraAsync({
+        aspect: [4, 3],
+        quality: 1,
+      })) as any;
+      photoUri = photo;
+    }
+
+    console.log(photoUri);
   }
 
   useEffect(() => {
-    hasPermissionGallery()
-  },[])
+    hasPermissionGallery();
+  }, []);
   return (
     <ImageGalleryContext.Provider
       value={{ addImageByGallery, photos: photoUri, addImageByCamera }}

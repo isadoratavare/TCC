@@ -17,7 +17,7 @@ const MetricsContext = createContext<MetricsContextProps | undefined>(
 export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const fileUri = `${FileSystem.documentDirectory}data3.json`;
+  const fileUri = `${FileSystem.documentDirectory}data-perfomance.json`;
 
   function getTimeData(markName: string, fn: () => void): number {
     performance.mark(markName);
@@ -29,9 +29,9 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   }
 
   async function createDataFile() {
-    const fileInfo = await FileSystem.getInfoAsync(fileUri);
+    const fileInfo = await FileSystem.getInfoAsync(fileUri)
 
-    if (!fileInfo.exists) {
+    if (!fileInfo?.exists) {
       await FileSystem.writeAsStringAsync(fileUri, JSON.stringify({}));
     }
   }
@@ -69,7 +69,8 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
     if (existingObject[metric].times < 2) {
       restartApp();
     } else {
-      Alert.alert(`Dados da ${metric} coletados!`);
+      console.log(metric)
+      return
     }
   }
 

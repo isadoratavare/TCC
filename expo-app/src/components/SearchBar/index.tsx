@@ -15,9 +15,14 @@ const SearchBar: React.FC = () => {
   useEffect(() => {
     if (search.trim() !== "") {
       async function get() {
-        await getAutoCompleteList(search).then((res) =>
-          setAutoCompleteList(res)
-        );
+        await getAutoCompleteList(search)
+          .then((res) => {
+            console.log(res);
+            setAutoCompleteList(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
       get();
       return;

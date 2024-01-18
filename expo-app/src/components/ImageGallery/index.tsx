@@ -6,9 +6,7 @@ import {
   useImageGallery,
 } from "../../hooks/useImageGallery";
 
-const ImageGallery: React.FC<{ placeId: string; openCamera: () => void }> = ({
-  placeId,
-}) => {
+const ImageGallery: React.FC<{ placeId: string }> = ({ placeId }) => {
   const [cameraOrGalleryModalOpen, setCameraOrGalleryModalOpen] =
     useState<boolean>(false);
 

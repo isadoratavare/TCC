@@ -41,19 +41,15 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     addNewValueToJSON(content, "gallery");
   }
   async function addImage(placeId: string, uri: string) {
-    console.log("addImage", placeId, uri);
-
     const existingIndex = photoUri.findIndex((item) => item.id === placeId);
 
     if (existingIndex !== -1) {
-      console.log(`Adding ${placeId}`);
       setPhotoUri((prevImageData) => {
         const updatedImageData = [...prevImageData];
         updatedImageData[existingIndex].uris.push(uri);
         return updatedImageData;
       });
     } else {
-      console.log(`Creating ${placeId}`);
       setPhotoUri((prevImageData) => [
         ...prevImageData,
         { id: placeId, uris: [uri] },
@@ -63,58 +59,35 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   async function addImageByGallery(placeId: string) {
     if (permission) {
       const result = await ImagePicker.launchImageLibraryAsync();
-      console.log(result);
       if (!result.canceled) {
         addImage(placeId, result.assets[0].uri);
       }
+    } else {
+      hasPermissionGallery();
     }
   }
-  async function addImageByCamera(
-    placeId: string,
-  ) {
-    // addImage(placeId, photo.uri);
-    /*
-      if (isCameraOpen) {
-    const timeInMilliseconds = getTimeData("getCameraPermission", () => {
-      const { granted } = permission as PermissionResponse;
+  async function addImageByCamera(placeId: string) {
+    const timeInMilliseconds = getTimeData("getCameraPermission", async () => {
+      let photoUri;
 
-      if (granted) {
-        return (
-          <CameraView
-            placeId={placeId}
-            onClose={() => setIsCameraOpen(false)}
-          />
-        );
-      } else {
-        getPermission();
+      let permission = await ImagePicker.getCameraPermissionsAsync();
+
+      if (!permission.granted) {
+        permission = await ImagePicker.requestCameraPermissionsAsync();
+      }
+
+      if (permission.granted) {
+        const photo = (await ImagePicker.launchCameraAsync({
+          aspect: [4, 3],
+          quality: 1,
+        })) as any;
+        photoUri = photo;
       }
     });
     const content = JSON.stringify(timeInMilliseconds, null, 2);
-     addNewValueToJSON(content, "camera");
-    */
-
-    let photoUri;
-
-    let permission = await ImagePicker.getCameraPermissionsAsync();
-
-    if (!permission.granted) {
-      permission = await ImagePicker.requestCameraPermissionsAsync();
-    }
-
-    if (permission.granted) {
-      const photo = (await ImagePicker.launchCameraAsync({
-        aspect: [4, 3],
-        quality: 1,
-      })) as any;
-      photoUri = photo;
-    }
-
-    console.log(photoUri);
+    addNewValueToJSON(content, "camera");
   }
 
-  useEffect(() => {
-    hasPermissionGallery();
-  }, []);
   return (
     <ImageGalleryContext.Provider
       value={{ addImageByGallery, photos: photoUri, addImageByCamera }}

@@ -43,7 +43,6 @@ const CameraView: React.FC<{ onClose?: () => void; placeId: string }> = ({
           }
           setShowPreview(false);
           onClose && onClose()
-          console.log("Photo has been added");
         }}
         cancelPhoto={() => {
           setShowPreview(false);

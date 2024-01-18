@@ -17,7 +17,7 @@ const MetricsContext = createContext<MetricsContextProps | undefined>(
 export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const fileUri = `${FileSystem.documentDirectory}data3.json`;
+  const fileUri = `${FileSystem.documentDirectory}data-perfomance.json`;
 
   function getTimeData(markName: string, fn: () => void): number {
     performance.mark(markName);
@@ -64,10 +64,9 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
       await new Promise((resolve) => setTimeout(resolve, 5000));
       await Updates.reloadAsync();
     };
-    console.log(existingObject[metric].times);
 
     if (existingObject[metric].times < 2) {
-      restartApp();
+      //restartApp();
     } else {
       Alert.alert(`Dados da ${metric} coletados!`);
     }

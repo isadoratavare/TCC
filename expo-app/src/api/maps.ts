@@ -10,7 +10,8 @@ function useMapsAPI() {
         key: GOOGLE_MAPS_KEY
       },
     })
-    .then(response => response.data)
+    .then(response =>{ 
+      return response.data})
     .catch((e) => alert(e.message))
     
     return res

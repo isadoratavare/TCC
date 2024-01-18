@@ -36,19 +36,16 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   }
 
   async function addImage(placeId: string, uri: string) {
-    console.log("addImage", placeId, uri);
 
     const existingIndex = photoUri.findIndex((item) => item.id === placeId);
 
     if (existingIndex !== -1) {
-      console.log(`Adding ${placeId}`);
       setPhotoUri((prevImageData) => {
         const updatedImageData = [...prevImageData];
         updatedImageData[existingIndex].uris.push(uri);
         return updatedImageData;
       });
     } else {
-      console.log(`Creating ${placeId}`);
       setPhotoUri((prevImageData) => [
         ...prevImageData,
         { id: placeId, uris: [uri] },
@@ -58,7 +55,6 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   async function addImageByGallery(placeId: string) {
     if (permission) {
       const result = await ImagePicker.launchImageLibraryAsync();
-      console.log(result);
       if (!result.canceled) {
         addImage(placeId, result.assets[0].uri);
       }

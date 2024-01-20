@@ -27,10 +27,6 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
   }
 
   useEffect(() => {
-   // console.log("Location: ", location)
-  }, [])
-
-  useEffect(() => {
     const getPermissionLocale = async () => {
       await getLocaleAsync()
     }

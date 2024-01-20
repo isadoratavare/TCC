@@ -6,8 +6,6 @@ import React, {
   useState,
 } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { MetricsContextProps, useMetrics } from "./useMetrics";
-
 export interface ImageGalleryContextProps {
   photos: { id: string; uris: string[] }[];
   addImageByGallery: (placeId: string) => void;
@@ -26,35 +24,22 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   );
   const [permission, setPermission] = useState<boolean>(false);
   const [permissionCamera, setPermissionCamera] = useState(false)
-  const { getTimeData, addNewValueToJSON } =
-    useMetrics() as MetricsContextProps;
+
 
   async function hasPermissionGallery() {
-    const timeInMilliseconds = getTimeData("getGalleryPermission", async () => {
-      const permissionReq =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      setPermission(permissionReq.status === "granted");
-    });
 
-    const content = JSON.stringify(timeInMilliseconds, null, 2);
-
-    addNewValueToJSON(content, "gallery");
+    const permissionReq =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    setPermission(permissionReq.status === "granted");
   }
   async function hasPermissionCamera() {
-    const timeInMilliseconds = getTimeData("getCameraPermission", async () => {
-      let permission = await ImagePicker.getCameraPermissionsAsync();
+    let permission = await ImagePicker.getCameraPermissionsAsync();
 
-      if (!permission.granted) {
-        permission = await ImagePicker.requestCameraPermissionsAsync();
-      }
+    if (!permission.granted) {
+      permission = await ImagePicker.requestCameraPermissionsAsync();
+    }
 
-      setPermissionCamera(permission.status === "granted");
-    });
-    console.log(timeInMilliseconds)
-    const content = JSON.stringify(timeInMilliseconds, null, 2);
-
-    addNewValueToJSON(content, "camera");
-
+    setPermissionCamera(permission.status === "granted");
   }
   async function addImage(placeId: string, uri: string) {
     const existingIndex = photoUri.findIndex((item) => item.id === placeId);
@@ -75,23 +60,25 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   async function addImageByGallery(placeId: string) {
     await hasPermissionGallery()
     if (permission) {
-      //const result = await ImagePicker.launchImageLibraryAsync();
-      //if (!result.canceled) {
-      //  addImage(placeId, result.assets[0].uri);
-      //}
+      const result = await ImagePicker.launchImageLibraryAsync();
+      if (!result.canceled) {
+        addImage(placeId, result.assets[0].uri);
+      }
     }
   }
   async function addImageByCamera(placeId: string) {
-      let photoUri;
-      await hasPermissionCamera()
-      if (permissionCamera) {
-        // const photo = (await ImagePicker.launchCameraAsync({
-        //   aspect: [4, 3],
-        //   quality: 1,
-        // })) as any;
-        // photoUri = photo;
-        console.log("oi")
-      }
+    let photoUri;
+    await hasPermissionCamera()
+    if (permissionCamera) {
+       const photo = (await ImagePicker.launchCameraAsync({
+         aspect: [4, 3],
+         quality: 1,
+       })) as any;
+       photoUri = photo;
+    }
+    if (photoUri.uri) {
+      addImage(photoUri, placeId)
+    }
   }
 
   return (

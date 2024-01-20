@@ -52,8 +52,9 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
     let times = existingObject[metric]?.times || 0;
     console.log(metric,times)
     if (times < 30) {
+      
       try {
-        times = existingObject.times;
+        times = existingObject?.times;
       } catch (error) {
         existingObject = {};
         times = 0;
@@ -65,11 +66,13 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
       existingObject[metric].data.push(value);
       existingObject[metric].times += 1;
 
+      Alert.alert("Coleta nº "+ existingObject[metric].times)
+
       await FileSystem.writeAsStringAsync(
         fileUri,
         JSON.stringify(existingObject)
       );
-
+       
       const restartApp = async () => {
         await new Promise((resolve) => setTimeout(resolve, 10000));
         await Updates.reloadAsync();
@@ -79,10 +82,10 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
 
     }
     else {
-
-      const isLocationComplete = existingObject?.location?.times === 30
-      const isCameraComplete = existingObject?.camera?.times === 30
-      const isGalleryComplete = existingObject?.gallery?.times === 30
+      Alert.alert("Dados de ", metric+ " coletados.")
+      const isLocationComplete = existingObject?.location?.times >= 30
+      const isCameraComplete = existingObject?.camera?.times >= 30
+      const isGalleryComplete = existingObject?.gallery?.times >= 30
 
       if (isLocationComplete && isCameraComplete && isGalleryComplete) {
         Alert.alert("Valores captados", "Deseja baixar o arquivo?" , [{

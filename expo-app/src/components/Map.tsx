@@ -27,7 +27,7 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
   }
 
   useEffect(() => {
-    console.log("Location: ", location)
+   // console.log("Location: ", location)
   }, [])
 
   useEffect(() => {
@@ -40,52 +40,42 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
   if (errorMsg) {
     return <Text>{errorMsg}</Text>;
   }
-  if (location) {
-    const initial = {
-      latitude: location?.coords.latitude || 0,
-      longitude: location?.coords.longitude || 0,
-      latitudeDelta: 0.0922,
-      longitudeDelta: 0.0421,
-    };
-    return (
-      <View style={[StyleSheet.absoluteFillObject, { flex: 1 }]}>
-        <MapView
-          style={[styles.map, StyleSheet.absoluteFillObject]}
-          region={initialLocation || initial}
-          ref={mapRef}
-        >
-          {pins.map((pin: Pin) => {
-            return (
-              <Marker
-                key={pin.place_id}
-                coordinate={{
-                  latitude: pin?.latitude || 0,
-                  longitude: pin?.longitude || location?.coords.longitude || 0,
-                }}
-                title={pin?.label}
-                description=""
-                onPress={() => {
-                  onPressMarker(pin);
-                }}
-              />
-            );
-          })}
-        </MapView>
-        <SearchBar />
-        <DecentralizedButton openZoomMap={openZoomMap} />
-      </View>
-    );
-  }
+
+  const initial = {
+    latitude: location?.coords.latitude || 0,
+    longitude: location?.coords.longitude || 0,
+    latitudeDelta: 0.0922,
+    longitudeDelta: 0.0421,
+  };
   return (
     <View style={[StyleSheet.absoluteFillObject, { flex: 1 }]}>
       <MapView
         style={[styles.map, StyleSheet.absoluteFillObject]}
+        region={initialLocation || initial}
         ref={mapRef}
-      />
+      >
+        {pins.map((pin: Pin) => {
+          return (
+            <Marker
+              key={pin.place_id}
+              coordinate={{
+                latitude: pin?.latitude || 0,
+                longitude: pin?.longitude || location?.coords.longitude || 0,
+              }}
+              title={pin?.label}
+              description=""
+              onPress={() => {
+                onPressMarker(pin);
+              }}
+            />
+          );
+        })}
+      </MapView>
       <SearchBar />
-        <DecentralizedButton openZoomMap={openZoomMap} />
+      <DecentralizedButton openZoomMap={openZoomMap} />
     </View>
-  )
+  );
+
 };
 const styles = StyleSheet.create({
   map: {

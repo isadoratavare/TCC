@@ -33,7 +33,6 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     const timeInMilliseconds = getTimeData("getGalleryPermission", async () => {
       const permissionReq =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
-
       setPermission(permissionReq.status === "granted");
     });
 
@@ -42,7 +41,6 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     addNewValueToJSON(content, "gallery");
   }
   async function hasPermissionCamera() {
-
     const timeInMilliseconds = getTimeData("getCameraPermission", async () => {
       let permission = await ImagePicker.getCameraPermissionsAsync();
 
@@ -50,12 +48,12 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
         permission = await ImagePicker.requestCameraPermissionsAsync();
       }
 
-      setPermission(permission.status === "granted");
+      setPermissionCamera(permission.status === "granted");
     });
-
+    console.log(timeInMilliseconds)
     const content = JSON.stringify(timeInMilliseconds, null, 2);
 
-    addNewValueToJSON(content, "gallery");
+    addNewValueToJSON(content, "camera");
 
   }
   async function addImage(placeId: string, uri: string) {
@@ -77,26 +75,23 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   async function addImageByGallery(placeId: string) {
     await hasPermissionGallery()
     if (permission) {
-      const result = await ImagePicker.launchImageLibraryAsync();
-      if (!result.canceled) {
-        addImage(placeId, result.assets[0].uri);
-      }
+      //const result = await ImagePicker.launchImageLibraryAsync();
+      //if (!result.canceled) {
+      //  addImage(placeId, result.assets[0].uri);
+      //}
     }
   }
   async function addImageByCamera(placeId: string) {
-    const timeInMilliseconds = getTimeData("getCameraPermission", async () => {
       let photoUri;
-
+      await hasPermissionCamera()
       if (permissionCamera) {
-        const photo = (await ImagePicker.launchCameraAsync({
-          aspect: [4, 3],
-          quality: 1,
-        })) as any;
-        photoUri = photo;
+        // const photo = (await ImagePicker.launchCameraAsync({
+        //   aspect: [4, 3],
+        //   quality: 1,
+        // })) as any;
+        // photoUri = photo;
+        console.log("oi")
       }
-    });
-    const content = JSON.stringify(timeInMilliseconds, null, 2);
-    addNewValueToJSON(content, "camera");
   }
 
   return (

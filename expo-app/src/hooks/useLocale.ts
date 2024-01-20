@@ -33,7 +33,6 @@ export default function useLocale(): LocaleHook {
     );
 
     const content = JSON.stringify(timeInMilliseconds, null, 2);
-
     addNewValueToJSON(content, "location");
   }
 

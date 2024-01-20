@@ -17,7 +17,6 @@ const SearchBar: React.FC = () => {
       async function get() {
         await getAutoCompleteList(search)
           .then((res) => {
-            console.log(res);
             setAutoCompleteList(res);
           })
           .catch((err) => {

@@ -19,16 +19,20 @@ export default function UserLocation() {
         setErrorMsg("Permission to access location was denied");
         return;
       }
-
+      console.log(status)
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
     })();
   }, []);
 
 
-  return (
-    <Marker
-      coordinate={location?.coords}
-    ></Marker>
-  );
+  if (location) {
+    return (
+      <Marker
+        coordinate={location?.coords}
+      ></Marker>
+    );
+  }
+
+  return <></>
 }

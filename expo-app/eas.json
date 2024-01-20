@@ -17,8 +17,15 @@
       }
     },
     "production": {
+      "channel": "production",
       "ios": {
         "resourceClass": "m1-medium"
+      },
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_ENV": "prod"
       }
     }
   },

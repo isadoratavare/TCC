@@ -2,7 +2,8 @@ import { ReactNode, createContext, useContext } from "react";
 import performance from "react-native-performance";
 import * as FileSystem from "expo-file-system";
 import * as Updates from "expo-updates";
-import { Alert, Share } from "react-native";
+import { Alert } from "react-native";
+import * as Sharing from 'expo-sharing';
 
 export interface MetricsContextProps {
   getTimeData: (markName: string, fn: () => void) => number;
@@ -17,7 +18,7 @@ const MetricsContext = createContext<MetricsContextProps | undefined>(
 export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const fileUri = `${FileSystem.documentDirectory}data-perfomance.json`;
+  const fileUri = `${FileSystem.documentDirectory}perfomance_data.json`;
 
   function getTimeData(markName: string, fn: () => void): number {
     performance.mark(markName);
@@ -37,39 +38,59 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   }
 
   async function addNewValueToJSON(value: any, metric: string) {
-    const existingContent = await FileSystem.readAsStringAsync(fileUri);
-
-    let times = 0;
-    let existingObject: { [key: string]: any } = {};
-
+    let existingContent = '{}'
     try {
-      existingObject = JSON.parse(existingContent);
-      times = existingObject.times;
-    } catch (error) {
-      existingObject = {};
-      times = 0;
+       existingContent = await FileSystem.readAsStringAsync(fileUri);
+    } catch (e) {
+      console.log(e)
     }
-    if (!existingObject[metric]) {
-      existingObject[metric] = { data: [], times: 0 };
-    }
-    existingObject[metric].data.push(value);
-    existingObject[metric].times += 1;
 
-    await FileSystem.writeAsStringAsync(
-      fileUri,
-      JSON.stringify(existingObject)
-    );
+    let existingObject: { [key: string]: any } = {};
+    existingObject = JSON.parse(existingContent);
+    console.log(fileUri)
 
-    const restartApp = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
-      await Updates.reloadAsync();
-    };
-    console.log(existingObject[metric].times);
+    let times = existingObject[metric]?.times || 0;
+    console.log(metric,times)
+    if (times < 30) {
+      try {
+        times = existingObject.times;
+      } catch (error) {
+        existingObject = {};
+        times = 0;
+      }
 
-    if (existingObject[metric].times < 2) {
+      if (!existingObject[metric]) {
+        existingObject[metric] = { data: [], times: 0 };
+      }
+      existingObject[metric].data.push(value);
+      existingObject[metric].times += 1;
+
+      await FileSystem.writeAsStringAsync(
+        fileUri,
+        JSON.stringify(existingObject)
+      );
+
+      const restartApp = async () => {
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        await Updates.reloadAsync();
+      };
+
       restartApp();
-    } else {
-      console.log(metric)
+
+    }
+    else {
+
+      const isLocationComplete = existingObject?.location?.times === 30
+      const isCameraComplete = existingObject?.camera?.times === 30
+      const isGalleryComplete = existingObject?.gallery?.times === 30
+
+      if (isLocationComplete && isCameraComplete && isGalleryComplete) {
+        Alert.alert("Valores captados", "Deseja baixar o arquivo?" , [{
+          text: 'Baixar',
+          onPress: () => downloadJSON(),
+        }])
+      }
+      
       return
     }
   }
@@ -80,15 +101,19 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
       try {
         const leituraArquivo = await FileSystem.readAsStringAsync(fileUri);
         conteudoExistente = JSON.parse(leituraArquivo);
-      } catch (error) {}
+      } catch (error) { }
 
       const novoConteudo = { ...conteudoExistente };
-      await FileSystem.writeAsStringAsync(
+      
+      FileSystem.writeAsStringAsync(fileUri, `${"oiiii"}\n`);
+      await Sharing.shareAsync(fileUri, { mimeType: 'text/plain', dialogTitle: 'Download do Log' });
+      const file = await FileSystem.writeAsStringAsync(
         fileUri,
-        JSON.stringify(novoConteudo)
+        JSON.stringify(novoConteudo),
+        {}
       );
 
-      Share.share({ url: fileUri });
+       console.log(file)
     } catch (error) {
       console.error("Erro:", error);
     }

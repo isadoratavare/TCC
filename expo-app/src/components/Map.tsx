@@ -27,7 +27,14 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
   }
 
   useEffect(() => {
-    getLocaleAsync();
+    console.log("Location: ", location)
+  }, [])
+
+  useEffect(() => {
+    const getPermissionLocale = async () => {
+      await getLocaleAsync()
+    }
+    getPermissionLocale()
   }, [pins]);
 
   if (errorMsg) {
@@ -55,7 +62,7 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
                   latitude: pin?.latitude || 0,
                   longitude: pin?.longitude || location?.coords.longitude || 0,
                 }}
-                title={pin.label}
+                title={pin?.label}
                 description=""
                 onPress={() => {
                   onPressMarker(pin);
@@ -69,7 +76,16 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
       </View>
     );
   }
-  return <></>;
+  return (
+    <View style={[StyleSheet.absoluteFillObject, { flex: 1 }]}>
+      <MapView
+        style={[styles.map, StyleSheet.absoluteFillObject]}
+        ref={mapRef}
+      />
+      <SearchBar />
+        <DecentralizedButton openZoomMap={openZoomMap} />
+    </View>
+  )
 };
 const styles = StyleSheet.create({
   map: {

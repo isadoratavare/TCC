@@ -1,6 +1,7 @@
 import { useState } from "react";
 import * as Location from "expo-location";
 import { MetricsContextProps, useMetrics } from "./useMetrics";
+import { Alert } from "react-native";
 
 export type LocaleHook = {
   location: Location.LocationObject | null;
@@ -28,6 +29,7 @@ export default function useLocale(): LocaleHook {
         }
 
         const location = await Location.getCurrentPositionAsync({});
+        Alert.alert(JSON.stringify(location?.coords))
         setLocation(location);
       }
     );

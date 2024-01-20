@@ -8,8 +8,8 @@ const api = axios.create({
   baseURL: API_URL,
   timeout: 1000,
   headers: {
-    "key": GOOGLE_MAPS_KEY
+    "key": GOOGLE_MAPS_KEY || process.env.GOOGLE_MAPS_KEY
   },
-});
+})
 
 export default api;

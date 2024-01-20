@@ -7,7 +7,7 @@ function useMapsAPI() {
     .get("/autocomplete/json", {
       params: {
         input: input || "",
-        key: GOOGLE_MAPS_KEY
+        key: GOOGLE_MAPS_KEY || process.env.GOOGLE_MAPS_KEY
       },
     })
     .then(response => response.data)

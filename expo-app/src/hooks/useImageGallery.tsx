@@ -25,20 +25,38 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     []
   );
   const [permission, setPermission] = useState<boolean>(false);
+  const [permissionCamera, setPermissionCamera] = useState(false)
   const { getTimeData, addNewValueToJSON } =
     useMetrics() as MetricsContextProps;
 
   async function hasPermissionGallery() {
     const timeInMilliseconds = getTimeData("getGalleryPermission", async () => {
-      const { status } =
+      const permissionReq =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-      setPermission(status === "granted");
+      setPermission(permissionReq.status === "granted");
     });
 
     const content = JSON.stringify(timeInMilliseconds, null, 2);
 
     addNewValueToJSON(content, "gallery");
+  }
+  async function hasPermissionCamera() {
+
+    const timeInMilliseconds = getTimeData("getCameraPermission", async () => {
+      let permission = await ImagePicker.getCameraPermissionsAsync();
+
+      if (!permission.granted) {
+        permission = await ImagePicker.requestCameraPermissionsAsync();
+      }
+
+      setPermission(permission.status === "granted");
+    });
+
+    const content = JSON.stringify(timeInMilliseconds, null, 2);
+
+    addNewValueToJSON(content, "gallery");
+
   }
   async function addImage(placeId: string, uri: string) {
     const existingIndex = photoUri.findIndex((item) => item.id === placeId);
@@ -57,26 +75,19 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
   async function addImageByGallery(placeId: string) {
+    await hasPermissionGallery()
     if (permission) {
       const result = await ImagePicker.launchImageLibraryAsync();
       if (!result.canceled) {
         addImage(placeId, result.assets[0].uri);
       }
-    } else {
-      hasPermissionGallery();
     }
   }
   async function addImageByCamera(placeId: string) {
     const timeInMilliseconds = getTimeData("getCameraPermission", async () => {
       let photoUri;
 
-      let permission = await ImagePicker.getCameraPermissionsAsync();
-
-      if (!permission.granted) {
-        permission = await ImagePicker.requestCameraPermissionsAsync();
-      }
-
-      if (permission.granted) {
+      if (permissionCamera) {
         const photo = (await ImagePicker.launchCameraAsync({
           aspect: [4, 3],
           quality: 1,

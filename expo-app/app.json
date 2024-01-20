@@ -26,6 +26,11 @@
         "android.permission.CAMERA",
         "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCrLCB3JG0LlC-fCeP9pbYTBrnZgQsyiWc"
+        }
+      },
       "package": "com.isadoratavare.expoapp"
     },
     "plugins": [

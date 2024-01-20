@@ -108,7 +108,7 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
 
       const novoConteudo = { ...conteudoExistente };
       
-      FileSystem.writeAsStringAsync(fileUri, `${"oiiii"}\n`);
+      FileSystem.writeAsStringAsync(fileUri, JSON.stringify(novoConteudo));
       await Sharing.shareAsync(fileUri, { mimeType: 'text/plain', dialogTitle: 'Download do Log' });
       const file = await FileSystem.writeAsStringAsync(
         fileUri,

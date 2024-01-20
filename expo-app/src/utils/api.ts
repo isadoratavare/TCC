@@ -4,12 +4,3 @@ import {GOOGLE_MAPS_KEY} from "@env";
 export const API_URL =
   "https://maps.googleapis.com/maps/api/place";
 
-const api = axios.create({
-  baseURL: API_URL,
-  timeout: 1000,
-  headers: {
-    "key": GOOGLE_MAPS_KEY || process.env.GOOGLE_MAPS_KEY
-  },
-})
-
-export default api;

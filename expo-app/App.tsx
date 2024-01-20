@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import Map from "./src/components/Map";
 
 import { LocationProvider } from "./src/hooks/useLocation";
@@ -13,10 +13,6 @@ import { ImageGalleryProvider } from "./src/hooks/useImageGallery";
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMarker, setModalMarker] = useState<Pin | null>();
-
-  useEffect(() => {
-    console.log("oi")
-  }, [])
 
   try {
     return (

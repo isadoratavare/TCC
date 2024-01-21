@@ -3,7 +3,11 @@ module.exports = ({ config }) => {
     ...config,
     android: {
       ...config.android,
-      api_key: process.env.GOOGLE_MAPS_KEY
+      config: {
+        googleMaps: {
+          apiKey: process.env.GOOGLE_MAPS_KEY
+        }
+      },
     },
   };
 };

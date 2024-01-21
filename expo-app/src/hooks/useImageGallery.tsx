@@ -76,7 +76,7 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
        })) as any;
        photoUri = photo;
     }
-    if (photoUri.uri) {
+    if (photoUri) {
       addImage(photoUri, placeId)
     }
   }

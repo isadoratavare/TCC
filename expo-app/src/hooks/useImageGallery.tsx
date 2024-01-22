@@ -2,10 +2,10 @@ import React, {
   ReactNode,
   createContext,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import * as ImagePicker from "expo-image-picker";
+import { Alert } from "react-native";
 export interface ImageGalleryContextProps {
   photos: { id: string; uris: string[] }[];
   addImageByGallery: (placeId: string) => void;
@@ -27,7 +27,6 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
 
 
   async function hasPermissionGallery() {
-
     const permissionReq =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
     setPermission(permissionReq.status === "granted");
@@ -70,14 +69,18 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     let photoUri;
     await hasPermissionCamera()
     if (permissionCamera) {
-       const photo = (await ImagePicker.launchCameraAsync({
-         aspect: [4, 3],
-         quality: 1,
-       })) as any;
-       photoUri = photo;
+      await ImagePicker.launchCameraAsync({
+        aspect: [4, 3],
+        quality: 1,
+      }).then(res => {
+        photoUri = res
+        return res
+      }).catch((e) => {
+        Alert.alert(e.message)
+      })
     }
     if (photoUri) {
-      addImage(photoUri, placeId)
+      addImage( placeId, photoUri?.assets[0]?.uri)
     }
   }
 

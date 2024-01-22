@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, View, Image, Modal } from "react-native";
 import GalleryButton from "../GalleryButton";
 import {
@@ -9,11 +9,13 @@ import {
 const ImageGallery: React.FC<{ placeId: string }> = ({ placeId }) => {
   const [cameraOrGalleryModalOpen, setCameraOrGalleryModalOpen] =
     useState<boolean>(false);
-
+  const [photosData, setPhotoData] = useState<{ id: string; uris: string[]; }>()
   const { addImageByGallery, photos, addImageByCamera } =
     useImageGallery() as ImageGalleryContextProps;
 
-  const photosData = photos.filter((photo) => photo.id === placeId)[0];
+  useEffect(() => {
+    setPhotoData(photos.filter((photo) => photo.id === placeId)[0])
+  }, [photos])
 
   return (
     <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
@@ -29,11 +31,12 @@ const ImageGallery: React.FC<{ placeId: string }> = ({ placeId }) => {
           />
         )}
         renderItem={({ item }: any) => {
+          console.log(item)
           return (
             <View>
               {item && (
                 <Image
-                  source={{ uri: item }}
+                source={{ uri: item }}
                   style={{
                     width: 100,
                     height: 100,
@@ -80,9 +83,9 @@ const ImageGallery: React.FC<{ placeId: string }> = ({ placeId }) => {
               <GalleryButton
                 icon="camera-alt"
                 name="Câmera"
-                onPress={() => {
+                onPress={async () => {
+                  await addImageByCamera(placeId);
                   setCameraOrGalleryModalOpen(false);
-                  addImageByCamera(placeId);
                 }}
               />
             </View>

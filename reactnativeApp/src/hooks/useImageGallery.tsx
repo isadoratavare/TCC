@@ -1,5 +1,7 @@
 /* eslint-disable prettier/prettier */
-import React, { ReactNode, createContext, useContext, useState } from "react";
+import React, { ReactNode, createContext, useContext, useState } from 'react';
+import { PermissionsAndroid } from 'react-native';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 export interface ImageGalleryContextProps {
     photos: { id: string; uris: string[] }[];
@@ -21,10 +23,16 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     const [permissionCamera, setPermissionCamera] = useState(false);
 
     async function hasPermissionGallery() {
-
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+        );
+        setPermission(granted === 'granted');
     }
     async function hasPermissionCamera() {
-
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+        );
+        setPermissionCamera(granted === 'granted');
     }
     async function addImage(placeId: string, uri: string) {
         const existingIndex = photoUri.findIndex((item) => item.id === placeId);
@@ -42,18 +50,31 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
             ]);
         }
     }
-    async function addImageByGallery(_placeId: string) {
+    async function addImageByGallery(placeId: string) {
+        let photoUri: any;
         await hasPermissionGallery();
         if (permission) {
+            const result = await launchImageLibrary({
+                mediaType: 'photo',
+            }) as any;
+            photoUri = result.assets[0].uri;
+            if (photoUri) {
+                addImage(placeId, photoUri);
+            }
+
         }
     }
     async function addImageByCamera(placeId: string) {
         let photoUri: any;
-        await hasPermissionCamera()
+        await hasPermissionCamera();
         if (permissionCamera) {
-        }
-        if (photoUri) {
-            addImage(placeId, photoUri?.assets[0]?.uri);
+            const result = await launchCamera({
+                mediaType: 'photo',
+            }) as any;
+            photoUri = result.assets[0].uri;
+            if (photoUri) {
+                addImage(placeId, photoUri);
+            }
         }
     }
 

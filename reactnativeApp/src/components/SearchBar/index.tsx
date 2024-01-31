@@ -38,19 +38,15 @@ const SearchBar: React.FC = () => {
     <View style={styles.searchContainer}>
       <View style={styles.container}>
         <View style={styles.textInputContainer}>
-          {/*<AntDesign
-            name="search1"
-            size={20}
-            color="#888"
-            style={{ marginHorizontal: 10 }}
-  />*/}
           <TextInput
             placeholder="Pesquisar..."
+            placeholderTextColor={"#888"}
             style={styles.input}
             value={search}
             onChangeText={(value) => {
               setSearch(value);
             }}
+
           />
         </View>
       </View>
@@ -95,7 +91,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  input: { flex: 1, padding: 0, margin: 0 },
+  input: { flex: 1, padding: 0, margin: 0, paddingHorizontal: 10, color: 'black' },
   listContainer: {
     alignItems: 'center',
     justifyContent: 'center',

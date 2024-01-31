@@ -66,7 +66,7 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
   async function addImageByCamera(placeId: string) {
-    let photoUri;
+    let photoUri: any;
     await hasPermissionCamera()
     if (permissionCamera) {
       await ImagePicker.launchCameraAsync({

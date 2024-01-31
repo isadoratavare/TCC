@@ -8,6 +8,9 @@ import { LocationProvider } from './src/hooks/useLocation';
 import { enableLatestRenderer } from 'react-native-maps';
 import Map from './src/components/Map';
 import { Pin } from './src/@types/map';
+import { ImageGalleryProvider } from './src/hooks/useImageGallery';
+import ModalBottom from './src/components/ModalBottom';
+import ImageGallery from './src/components/ImageGallery';
 
 enableLatestRenderer();
 
@@ -17,14 +20,21 @@ function App(): React.JSX.Element {
 
   return (
     <LocationProvider>
-      <View style={[StyleSheet.absoluteFillObject, styles.container]}>
-        <Map onPressMarker={(marker: Pin) => {
-          if (!isModalOpen) {
-            setIsModalOpen(true);
-          }
-          setModalMarker(marker);
-        }} />
-      </View>
+      <ImageGalleryProvider>
+        <View style={[StyleSheet.absoluteFillObject, styles.container]}>
+          <Map onPressMarker={(marker: Pin) => {
+            if (!isModalOpen) {
+              setIsModalOpen(true);
+            }
+            setModalMarker(marker);
+          }} />
+        </View>
+        {isModalOpen && (
+            <ModalBottom isOpen={isModalOpen} setOpen={setIsModalOpen}>
+              <ImageGallery placeId={modalMarker?.place_id || ""} />
+            </ModalBottom>
+          )}
+      </ImageGalleryProvider>
     </LocationProvider>
   );
 }

@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { useState } from 'react';
-import Geolocation, { GeolocationResponse } from "@react-native-community/geolocation";
+import Geolocation, { GeolocationResponse } from '@react-native-community/geolocation';
 import { PermissionsAndroid } from 'react-native';
 
 export type LocaleHook = {
@@ -11,7 +11,7 @@ export type LocaleHook = {
 
 export default function useLocale(): LocaleHook {
     const [location, setLocation] = useState<GeolocationResponse | null>(null);
-    const [errorMsg, setErrorMsg] = useState("");
+    const [errorMsg, setErrorMsg] = useState('');
 
     async function getLocaleAsync() {
         const granted = await PermissionsAndroid.request(

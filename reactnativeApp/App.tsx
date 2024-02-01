@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  PermissionsAndroid,
   StyleSheet,
   View,
 } from 'react-native';
@@ -11,12 +12,28 @@ import { Pin } from './src/@types/map';
 import { ImageGalleryProvider } from './src/hooks/useImageGallery';
 import ModalBottom from './src/components/ModalBottom';
 import ImageGallery from './src/components/ImageGallery';
+import RNFS from 'react-native-fs';
 
 enableLatestRenderer();
 
 function App(): React.JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMarker, setModalMarker] = useState<Pin | null>();
+
+  useEffect(() => {
+
+    console.log(RNFS.ExternalDirectoryPath);
+
+    var path = RNFS.ExternalDirectoryPath + '/test.txt';
+    RNFS.writeFile(path, 'Lorem ipsum dolor sit amet', 'utf8')
+      .then((success) => {
+        console.log('FILE WRITTEN!');
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
+  }, []);
+
 
   return (
     <LocationProvider>
@@ -30,10 +47,10 @@ function App(): React.JSX.Element {
           }} />
         </View>
         {isModalOpen && (
-            <ModalBottom isOpen={isModalOpen} setOpen={setIsModalOpen}>
-              <ImageGallery placeId={modalMarker?.place_id || ""} />
-            </ModalBottom>
-          )}
+          <ModalBottom isOpen={isModalOpen} setOpen={setIsModalOpen}>
+            <ImageGallery placeId={modalMarker?.place_id || ""} />
+          </ModalBottom>
+        )}
       </ImageGalleryProvider>
     </LocationProvider>
   );

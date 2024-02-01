@@ -58,6 +58,7 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
                 mediaType: 'photo',
             }) as any;
             photoUri = result.assets[0].uri;
+            console.log(photoUri);
             if (photoUri) {
                 addImage(placeId, photoUri);
             }

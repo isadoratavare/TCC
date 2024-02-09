@@ -17,7 +17,7 @@ export default function useLocale(): LocaleHook {
     useMetrics() as MetricsContextProps;
 
   async function getLocaleAsync() {
-    const timeInMilliseconds = getTimeData(
+    const timeInMilliseconds = await getTimeData(
       "getLocationPermission",
       async () => {
         const { status } = await Location.requestForegroundPermissionsAsync();
@@ -31,6 +31,8 @@ export default function useLocale(): LocaleHook {
         setLocation(location);
       }
     );
+
+    console.log(timeInMilliseconds);
 
     const content = JSON.stringify(timeInMilliseconds, null, 2);
     addNewValueToJSON(content, "location");

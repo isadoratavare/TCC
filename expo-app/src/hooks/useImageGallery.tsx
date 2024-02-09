@@ -30,18 +30,20 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     useMetrics() as MetricsContextProps;
 
   async function hasPermissionGallery() {
-    const timeInMilliseconds = getTimeData("getGalleryPermission", async () => {
+    const timeInMilliseconds = await  getTimeData("getGalleryPermission", async () => {
       const permissionReq =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       setPermission(permissionReq.status === "granted");
     });
+
+    console.log("Gallery: ", timeInMilliseconds)
 
     const content = JSON.stringify(timeInMilliseconds, null, 2);
 
     addNewValueToJSON(content, "gallery");
   }
   async function hasPermissionCamera() {
-    const timeInMilliseconds = getTimeData("getCameraPermission", async () => {
+    const timeInMilliseconds = await getTimeData("getCameraPermission", async () => {
       let permission = await ImagePicker.getCameraPermissionsAsync();
 
       if (!permission.granted) {
@@ -50,7 +52,7 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
 
       setPermissionCamera(permission.status === "granted");
     });
-    console.log(timeInMilliseconds)
+    console.log('Camera: ', timeInMilliseconds)
     const content = JSON.stringify(timeInMilliseconds, null, 2);
 
     addNewValueToJSON(content, "camera");
@@ -90,7 +92,6 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
         //   quality: 1,
         // })) as any;
         // photoUri = photo;
-        console.log("oi")
       }
   }
 

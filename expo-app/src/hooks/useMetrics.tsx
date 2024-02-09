@@ -6,7 +6,7 @@ import { Alert } from "react-native";
 import * as Sharing from 'expo-sharing';
 
 export interface MetricsContextProps {
-  getTimeData: (markName: string, fn: () => void) => number;
+  getTimeData: (markName: string, fn: () => void) => Promise<number>;
   addNewValueToJSON: (value: any, metric: string) => void;
   downloadJSON: () => void;
 }
@@ -20,9 +20,9 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const fileUri = `${FileSystem.documentDirectory}perfomance_data.json`;
 
-  function getTimeData(markName: string, fn: () => void): number {
+  async function getTimeData(markName: string, fn: () => void): Promise<number> {
     performance.mark(markName);
-    fn();
+    await fn();
     performance.measure("myMeasure", markName);
     const data = performance.getEntriesByName("myMeasure");
     createDataFile();
@@ -47,10 +47,8 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
 
     let existingObject: { [key: string]: any } = {};
     existingObject = JSON.parse(existingContent);
-    console.log(fileUri)
 
     let times = existingObject[metric]?.times || 0;
-    console.log(metric,times)
     if (times < 30) {
       
       try {
@@ -75,7 +73,7 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
        
       const restartApp = async () => {
         await new Promise((resolve) => setTimeout(resolve, 10000));
-        await Updates.reloadAsync();
+        //await Updates.reloadAsync();
       };
 
       restartApp();

@@ -18,7 +18,7 @@ const MetricsContext = createContext<MetricsContextProps | undefined>(
 export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const fileUri = `${FileSystem.documentDirectory}perfomance_data.json`;
+  const fileUri = `${FileSystem.documentDirectory}expo_data.json`;
 
   async function getTimeData(markName: string, fn: () => void): Promise<number> {
     performance.mark(markName);
@@ -70,13 +70,7 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
         fileUri,
         JSON.stringify(existingObject)
       );
-       
-      const restartApp = async () => {
-        await new Promise((resolve) => setTimeout(resolve, 10000));
-        //await Updates.reloadAsync();
-      };
-
-      restartApp();
+      
 
     }
     else {

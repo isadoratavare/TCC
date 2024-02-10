@@ -32,8 +32,6 @@ export default function useLocale(): LocaleHook {
       }
     );
 
-    console.log(timeInMilliseconds);
-
     const content = JSON.stringify(timeInMilliseconds, null, 2);
     addNewValueToJSON(content, "location");
   }

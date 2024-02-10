@@ -20,7 +20,7 @@ const MetricsContext = createContext<MetricsContextProps | undefined>(
 export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
     children,
 }) => {
-    const filePath = RNFS.ExternalDirectoryPath + '/data-examenple.txt';
+    const filePath = RNFS.ExternalDirectoryPath + '/data.txt';
     async function getTimeData(markName: string, fn: () => void): Promise<number> {
         performance.mark(markName);
         await fn();

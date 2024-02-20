@@ -2,7 +2,6 @@
 import React, { ReactNode, createContext, useContext, useState } from 'react';
 import { PermissionsAndroid } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { useMetrics, MetricsContextProps } from './useMetrics';
 
 export interface ImageGalleryContextProps {
     photos: { id: string; uris: string[] }[];
@@ -22,30 +21,19 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     );
     const [permission, setPermission] = useState<boolean>(false);
     const [permissionCamera, setPermissionCamera] = useState(false);
-    const { getTimeData, addNewValueToJSON } =
-        useMetrics() as MetricsContextProps;
+
     async function hasPermissionGallery() {
-
-        const timeInMilliseconds = await getTimeData('getGalleryPermission',
-            async () => {
-                const granted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
-                );
-                setPermission(granted === 'granted');
-            }
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
         );
-
-        addNewValueToJSON(timeInMilliseconds.toString(), 'gallery');
+        setPermission(granted === 'granted');
     }
-    async function hasPermissionCamera() {
-        const timeInMilliseconds = await getTimeData('getCameraPermission', async () => {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.CAMERA,
-            );
-            setPermissionCamera(granted === 'granted');
-        });
 
-        addNewValueToJSON(timeInMilliseconds.toString(), 'camera');
+    async function hasPermissionCamera() {
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.CAMERA,
+        );
+        setPermissionCamera(granted === 'granted');
     }
     async function addImage(placeId: string, uri: string) {
         const existingIndex = photoUri.findIndex((item) => item.id === placeId);
@@ -67,14 +55,13 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
         let photoUri: any;
         await hasPermissionGallery();
         if (permission) {
-            /*const result = await launchImageLibrary({
+            const result = await launchImageLibrary({
                 mediaType: 'photo',
             }) as any;
             photoUri = result.assets[0].uri;
-            console.log(photoUri);
             if (photoUri) {
                 addImage(placeId, photoUri);
-            }*/
+            }
 
         }
     }
@@ -82,13 +69,13 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
         let photoUri: any;
         await hasPermissionCamera();
         if (permissionCamera) {
-           /* const result = await launchCamera({
+            const result = await launchCamera({
                 mediaType: 'photo',
             }) as any;
             photoUri = result.assets[0].uri;
             if (photoUri) {
                 addImage(placeId, photoUri);
-            }*/
+            }
         }
     }
 

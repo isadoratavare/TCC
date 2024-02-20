@@ -11,8 +11,6 @@ import { Pin } from './src/@types/map';
 import { ImageGalleryProvider } from './src/hooks/useImageGallery';
 import ModalBottom from './src/components/ModalBottom';
 import ImageGallery from './src/components/ImageGallery';
-import RNFS from 'react-native-fs';
-import Share from 'react-native-share';
 import { MetricsProvider } from './src/hooks/useMetrics';
 
 enableLatestRenderer();
@@ -20,23 +18,6 @@ enableLatestRenderer();
 function App(): React.JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalMarker, setModalMarker] = useState<Pin | null>();
-
-  useEffect(() => {
-    /* RNFS.mkdir(RNFS.ExternalDirectoryPath + 'pasta').catch(e => console.log(e));
-     console.log(RNFS.ExternalDirectoryPath);
- 
-     const filePath = RNFS.ExternalDirectoryPath + '/example.txt';
- 
-     RNFS.writeFile(filePath, 'Hello, React Native File System!', 'utf8');
- 
-     Share.open({
-       url: 'file://' + RNFS.ExternalDirectoryPath + '/example.txt',
-       type: 'application/txt',
-       saveToFiles: true,
-     });
- */
-  }, []);
-
 
   return (
     <MetricsProvider>

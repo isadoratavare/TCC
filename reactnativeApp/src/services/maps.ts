@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import useMapsAPI from "../api/maps";
 
 function useMapsService() {
@@ -5,7 +6,6 @@ function useMapsService() {
 
   async function getAutoCompleteList(input: string) {
     const response = await getAutoComplete(input);
-
     const places = response?.predictions?.map(
       (prediction: {
         place_id: string;

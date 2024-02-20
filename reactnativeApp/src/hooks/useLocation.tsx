@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable quotes */
 import React, { ReactNode, createContext, useContext, useState } from "react";
 import { Pin, Region } from "../@types/map";

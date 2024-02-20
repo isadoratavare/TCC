@@ -5,7 +5,6 @@ import React, {
   useState,
 } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { Alert } from "react-native";
 export interface ImageGalleryContextProps {
   photos: { id: string; uris: string[] }[];
   addImageByGallery: (placeId: string) => void;
@@ -66,22 +65,16 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
   async function addImageByCamera(placeId: string) {
-    let photoUri: any;
+    let photoUri;
     await hasPermissionCamera()
     if (permissionCamera) {
-      await ImagePicker.launchCameraAsync({
-        aspect: [4, 3],
-        quality: 1,
-      }).then(res => {
-        photoUri = res
-        return res
-      }).catch((e) => {
-        Alert.alert(e.message)
-      })
+       const photo = (await ImagePicker.launchCameraAsync({
+         aspect: [4, 3],
+         quality: 1,
+       })) as any;
+       photoUri = photo;
     }
-    if (photoUri) {
-      addImage( placeId, photoUri?.assets[0]?.uri)
-    }
+    addImage(placeId, photoUri)
   }
 
   return (

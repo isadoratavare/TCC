@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,6 +11,7 @@ import { Pin } from './src/@types/map';
 import { ImageGalleryProvider } from './src/hooks/useImageGallery';
 import ModalBottom from './src/components/ModalBottom';
 import ImageGallery from './src/components/ImageGallery';
+import { MetricsProvider } from './src/hooks/useMetrics';
 
 enableLatestRenderer();
 
@@ -19,23 +20,25 @@ function App(): React.JSX.Element {
   const [modalMarker, setModalMarker] = useState<Pin | null>();
 
   return (
-    <LocationProvider>
-      <ImageGalleryProvider>
-        <View style={[StyleSheet.absoluteFillObject, styles.container]}>
-          <Map onPressMarker={(marker: Pin) => {
-            if (!isModalOpen) {
-              setIsModalOpen(true);
-            }
-            setModalMarker(marker);
-          }} />
-        </View>
-        {isModalOpen && (
+    <MetricsProvider>
+      <LocationProvider>
+        <ImageGalleryProvider>
+          <View style={[StyleSheet.absoluteFillObject, styles.container]}>
+            <Map onPressMarker={(marker: Pin) => {
+              if (!isModalOpen) {
+                setIsModalOpen(true);
+              }
+              setModalMarker(marker);
+            }} />
+          </View>
+          {isModalOpen && (
             <ModalBottom isOpen={isModalOpen} setOpen={setIsModalOpen}>
               <ImageGallery placeId={modalMarker?.place_id || ""} />
             </ModalBottom>
           )}
-      </ImageGalleryProvider>
-    </LocationProvider>
+        </ImageGalleryProvider>
+      </LocationProvider>
+    </MetricsProvider>
   );
 }
 

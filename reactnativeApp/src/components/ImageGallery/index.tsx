@@ -34,7 +34,6 @@ const ImageGallery: React.FC<{ placeId: string }> = ({ placeId }) => {
                     />
                 )}
                 renderItem={({ item }: any) => {
-                    console.log(item)
                     return (
                         <View>
                             {item && (

@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { useState } from 'react';
-import Geolocation, { GeolocationResponse } from "@react-native-community/geolocation";
+import Geolocation, { GeolocationResponse } from '@react-native-community/geolocation';
 import { PermissionsAndroid } from 'react-native';
 
 export type LocaleHook = {
@@ -11,14 +11,14 @@ export type LocaleHook = {
 
 export default function useLocale(): LocaleHook {
     const [location, setLocation] = useState<GeolocationResponse | null>(null);
-    const [errorMsg, setErrorMsg] = useState("");
+    const [errorMsg, setErrorMsg] = useState('');
+
 
     async function getLocaleAsync() {
         const granted = await PermissionsAndroid.request(
             PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('You can use the camera');
             Geolocation.getCurrentPosition(info => setLocation(info));
         } else {
             setErrorMsg('Camera permission denied');

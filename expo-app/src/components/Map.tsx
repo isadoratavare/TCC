@@ -6,6 +6,7 @@ import { LocationContextProps, useLocation } from "../hooks/useLocation";
 import { Pin } from "../@types/map";
 import DecentralizedButton from "./DecentralizedButton";
 import SearchBar from "./SearchBar";
+import { ImageGalleryContextProps, useImageGallery } from "../hooks/useImageGallery";
 
 type MapRefType = MapView | null;
 
@@ -15,7 +16,12 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
   const { getLocaleAsync, errorMsg, location } = useLocale() as LocaleHook;
   const { initialLocation, pins } =
     useLocation() as LocationContextProps;
+  const { photos } = useImageGallery() as ImageGalleryContextProps
   const mapRef = useRef<MapRefType>(null);
+
+  useEffect(() => {
+    onPressMarker(pins[photos.length - 1])
+  }, [photos])
 
   function openZoomMap() {
     if (pins.length > 0 && mapRef.current) {
@@ -27,12 +33,8 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
   }
 
   useEffect(() => {
-   // console.log("Location: ", location)
-  }, [])
-
-  useEffect(() => {
     const getPermissionLocale = async () => {
-      await getLocaleAsync()
+      getLocaleAsync()
     }
     getPermissionLocale()
   }, [pins]);

@@ -1,11 +1,13 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/react-in-jsx-scope */
-import { ReactNode, createContext, useContext } from 'react';
-import performance from "react-native-performance";
+import { ReactNode, createContext, useContext, useEffect } from 'react';
+import performance from 'react-native-performance';
 import RNFS from 'react-native-fs';
 import { Alert } from 'react-native';
 import Share from 'react-native-share';
-
+import useMapsService from '../services/maps';
+import { ImageGalleryContextProps, useImageGallery } from './useImageGallery';
+import { LocationContextProps, useLocation } from './useLocation';
 
 export interface MetricsContextProps {
     getTimeData: (markName: string, fn: () => void) => Promise<number>;
@@ -20,12 +22,18 @@ const MetricsContext = createContext<MetricsContextProps | undefined>(
 export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
     children,
 }) => {
+    const { getAutoCompleteList, getPlaceGeometry } = useMapsService();
+
+    const { addImage } = useImageGallery() as ImageGalleryContextProps;
+    const { addLocation } = useLocation() as LocationContextProps;
+
+
     const filePath = RNFS.ExternalDirectoryPath + '/data.txt';
     async function getTimeData(markName: string, fn: () => void): Promise<number> {
         performance.mark(markName);
         await fn();
-        performance.measure("myMeasure", markName);
-        const data = performance.getEntriesByName("myMeasure");
+        performance.measure('myMeasure', markName);
+        const data = performance.getEntriesByName('myMeasure');
         createDataFile();
         return data[0].duration;
     }
@@ -69,9 +77,9 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
             Alert.alert('Coleta n° ' + existingObject[metric].times);
         } else {
             Alert.alert('Dados de ', metric + ' coletados.');
-            const isLocationComplete = existingObject?.location?.times >= 30
-            const isCameraComplete = existingObject?.camera?.times >= 30
-            const isGalleryComplete = existingObject?.gallery?.times >= 30
+            const isLocationComplete = existingObject?.location?.times >= 30;
+            const isCameraComplete = existingObject?.camera?.times >= 30;
+            const isGalleryComplete = existingObject?.gallery?.times >= 30;
             if (isLocationComplete && isCameraComplete && isGalleryComplete) {
                 Alert.alert('Valores captados', 'Deseja baixar o arquivo?', [{
                     text: 'Baixar',
@@ -87,8 +95,37 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
             type: 'application/txt',
             saveToFiles: true,
         });
+    };
+    async function addPin(placeName: string) {
+        const image = 'https://revistaazul.voeazul.com.br/wp-content/uploads/2023/03/Recife-1.jpg';
+        const autoComplete = await getAutoCompleteList(placeName);
+        const placeId = autoComplete[0].id;
+        await addLocation(placeId);
+        await addImage(placeId, image);
     }
 
+    async function addPinsFlow() {
+        var cidadesPernambuco = [
+            'Recife',
+            'Caruaru',
+            'Olinda',
+            'Garanhuns',
+            'Petrolina',
+            'Paulista',
+            'Jaboatão dos Guararapes',
+            'Cabo de Santo Agostinho',
+            'Camaragibe',
+            'Vitória de Santo Antão',
+        ];
+        for (let cidade of cidadesPernambuco) {
+            addPin(cidade);
+        }
+
+    }
+
+    useEffect(() => {
+        addPinsFlow();
+    }, []);
     return (
         <MetricsContext.Provider
             value={{ getTimeData, addNewValueToJSON, downloadJSON }}

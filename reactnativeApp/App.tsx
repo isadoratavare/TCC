@@ -20,9 +20,9 @@ function App(): React.JSX.Element {
   const [modalMarker, setModalMarker] = useState<Pin | null>();
 
   return (
-    <MetricsProvider>
-      <LocationProvider>
-        <ImageGalleryProvider>
+    <LocationProvider>
+      <ImageGalleryProvider>
+        <MetricsProvider>
           <View style={[StyleSheet.absoluteFillObject, styles.container]}>
             <Map onPressMarker={(marker: Pin) => {
               if (!isModalOpen) {
@@ -36,9 +36,9 @@ function App(): React.JSX.Element {
               <ImageGallery placeId={modalMarker?.place_id || ""} />
             </ModalBottom>
           )}
-        </ImageGalleryProvider>
-      </LocationProvider>
-    </MetricsProvider>
+        </MetricsProvider>
+      </ImageGalleryProvider>
+    </LocationProvider>
   );
 }
 

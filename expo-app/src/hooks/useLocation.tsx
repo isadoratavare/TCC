@@ -47,6 +47,8 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
     setInitialLocation(region);
   }
 
+  
+
   return (
     <LocationContext.Provider
       value={{

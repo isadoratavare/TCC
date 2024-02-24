@@ -9,6 +9,7 @@ import useLocale, { LocaleHook } from '../hooks/useLocale';
 import { LocationContextProps, useLocation } from '../hooks/useLocation';
 import SearchBar from './SearchBar';
 import DecentralizedButton from './DecentralizedButton';
+import { ImageGalleryContextProps, useImageGallery } from "../hooks/useImageGallery";
 
 type MapRefType = MapView | null;
 
@@ -18,8 +19,14 @@ const Map: React.FC<{ onPressMarker: (pin: Pin) => void }> = ({
     const { getLocaleAsync, errorMsg, location } = useLocale() as LocaleHook;
     const { initialLocation, pins } =
         useLocation() as LocationContextProps;
+    const { photos } = useImageGallery() as ImageGalleryContextProps
+
     const mapRef = useRef<MapRefType>(null);
 
+    useEffect(() => {
+        onPressMarker(pins[photos.length - 1]);
+    }, [photos]);
+    
     function openZoomMap() {
         if (pins.length > 0 && mapRef.current) {
             mapRef?.current?.fitToCoordinates(pins, {

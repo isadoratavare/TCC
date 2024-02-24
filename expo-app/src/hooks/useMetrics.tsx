@@ -1,9 +1,11 @@
-import { ReactNode, createContext, useContext } from "react";
+import { ReactNode, createContext, useContext, useEffect } from "react";
 import performance from "react-native-performance";
 import * as FileSystem from "expo-file-system";
-import * as Updates from "expo-updates";
 import { Alert } from "react-native";
 import * as Sharing from 'expo-sharing';
+import useMapsService from "../services/maps";
+import { LocationContextProps, useLocation } from "./useLocation";
+import { ImageGalleryContextProps, useImageGallery } from "./useImageGallery";
 
 export interface MetricsContextProps {
   getTimeData: (markName: string, fn: () => void) => Promise<number>;
@@ -18,6 +20,12 @@ const MetricsContext = createContext<MetricsContextProps | undefined>(
 export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+
+  const { getAutoCompleteList, getPlaceGeometry } = useMapsService()
+ 
+  const { addImage } = useImageGallery() as ImageGalleryContextProps
+  const { addLocation } = useLocation() as LocationContextProps
+
   const fileUri = `${FileSystem.documentDirectory}expo_data.json`;
 
   async function getTimeData(markName: string, fn: () => void): Promise<number> {
@@ -40,7 +48,7 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   async function addNewValueToJSON(value: any, metric: string) {
     let existingContent = '{}'
     try {
-       existingContent = await FileSystem.readAsStringAsync(fileUri);
+      existingContent = await FileSystem.readAsStringAsync(fileUri);
     } catch (e) {
       console.log(e)
     }
@@ -50,7 +58,7 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
 
     let times = existingObject[metric]?.times || 0;
     if (times < 30) {
-      
+
       try {
         times = existingObject?.times;
       } catch (error) {
@@ -64,28 +72,28 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
       existingObject[metric].data.push(value);
       existingObject[metric].times += 1;
 
-      Alert.alert("Coleta nº "+ existingObject[metric].times)
+      Alert.alert("Coleta nº " + existingObject[metric].times)
 
       await FileSystem.writeAsStringAsync(
         fileUri,
         JSON.stringify(existingObject)
       );
-      
+
 
     }
     else {
-      Alert.alert("Dados de ", metric+ " coletados.")
+      Alert.alert("Dados de ", metric + " coletados.")
       const isLocationComplete = existingObject?.location?.times >= 30
       const isCameraComplete = existingObject?.camera?.times >= 30
       const isGalleryComplete = existingObject?.gallery?.times >= 30
 
       if (isLocationComplete && isCameraComplete && isGalleryComplete) {
-        Alert.alert("Valores captados", "Deseja baixar o arquivo?" , [{
+        Alert.alert("Valores captados", "Deseja baixar o arquivo?", [{
           text: 'Baixar',
           onPress: () => downloadJSON(),
         }])
       }
-      
+
       return
     }
   }
@@ -99,7 +107,7 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
       } catch (error) { }
 
       const novoConteudo = { ...conteudoExistente };
-      
+
       FileSystem.writeAsStringAsync(fileUri, JSON.stringify(novoConteudo));
       await Sharing.shareAsync(fileUri, { mimeType: 'text/plain', dialogTitle: 'Download do Log' });
       const file = await FileSystem.writeAsStringAsync(
@@ -108,11 +116,43 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
         {}
       );
 
-       console.log(file)
+      console.log(file)
     } catch (error) {
       console.error("Erro:", error);
     }
   };
+
+  async function addPin(placeName: string) {
+    const image = "https://revistaazul.voeazul.com.br/wp-content/uploads/2023/03/Recife-1.jpg"
+    const autoComplete = await getAutoCompleteList(placeName)
+    const placeId = autoComplete[0].id;
+    await addLocation(placeId);
+    await addImage(placeId, image)
+  }
+
+  async function addPinsFlow() {
+    var cidadesPernambuco = [
+      "Recife",
+      "Caruaru",
+      "Olinda",
+      "Garanhuns",
+      "Petrolina",
+      "Paulista",
+      "Jaboatão dos Guararapes",
+      "Cabo de Santo Agostinho",
+      "Camaragibe",
+      "Vitória de Santo Antão"
+    ];
+    for (let cidade of cidadesPernambuco) {
+      addPin(cidade)
+    }
+
+  }
+
+  useEffect(() => {
+    addPinsFlow()
+  }, [])
+
 
   return (
     <MetricsContext.Provider

@@ -11,6 +11,7 @@ export interface ImageGalleryContextProps {
   photos: { id: string; uris: string[] }[];
   addImageByGallery: (placeId: string) => void;
   addImageByCamera: (placeId: string) => void;
+  addImage: (placeId: string, uri: string) => void
 }
 
 const ImageGalleryContext = createContext<ImageGalleryContextProps | undefined>(
@@ -84,7 +85,7 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <ImageGalleryContext.Provider
-      value={{ addImageByGallery, photos: photoUri, addImageByCamera }}
+      value={{ addImageByGallery, photos: photoUri, addImageByCamera, addImage }}
     >
       {children}
     </ImageGalleryContext.Provider>

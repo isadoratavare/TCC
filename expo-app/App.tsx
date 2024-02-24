@@ -16,9 +16,9 @@ export default function App() {
 
   try {
     return (
-      <MetricsProvider>
-        <LocationProvider>
-          <ImageGalleryProvider>
+      <LocationProvider>
+        <ImageGalleryProvider>
+          <MetricsProvider>
             <View style={styles.container}>
               <Map
                 onPressMarker={(marker: Pin) => {
@@ -34,9 +34,9 @@ export default function App() {
                 <ImageGallery placeId={modalMarker?.place_id || ""} />
               </ModalBottom>
             )}
-          </ImageGalleryProvider>
-        </LocationProvider>
-      </MetricsProvider>
+          </MetricsProvider>
+        </ImageGalleryProvider>
+      </LocationProvider>
     );
   }
   catch (e) {

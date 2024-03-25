@@ -22,11 +22,12 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
 
   const { getAutoCompleteList, getPlaceGeometry } = useMapsService()
- 
+
   const { addImage } = useImageGallery() as ImageGalleryContextProps
   const { addLocation } = useLocation() as LocationContextProps
 
   const fileUri = `${FileSystem.documentDirectory}expo_data.json`;
+  const fileUri2 = `${FileSystem.documentDirectory}script_expo.json`;
 
   async function getTimeData(markName: string, fn: () => void): Promise<number> {
     performance.mark(markName);
@@ -131,22 +132,31 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   }
 
   async function addPinsFlow() {
-    var cidadesPernambuco = [
-      "Recife",
-      "Caruaru",
-      "Olinda",
-      "Garanhuns",
-      "Petrolina",
-      "Paulista",
-      "Jaboatão dos Guararapes",
-      "Cabo de Santo Agostinho",
-      "Camaragibe",
-      "Vitória de Santo Antão"
-    ];
-    for (let cidade of cidadesPernambuco) {
-      addPin(cidade)
-    }
+    console.log("Inicio do pontos")
 
+    const timeScript = await getTimeData("addPins", async () => {
+      var cidadesPernambuco = [
+        "Recife",
+        "Caruaru",
+        "Olinda",
+        "Garanhuns",
+        "Petrolina",
+        "Paulista",
+        "Jaboatão dos Guararapes",
+        "Cabo de Santo Agostinho",
+        "Camaragibe",
+        "Vitória de Santo Antão"
+      ];
+      for (let cidade of cidadesPernambuco) {
+        await addPin(cidade)
+      }
+    })
+    await FileSystem.writeAsStringAsync(
+      fileUri2, 
+      `Tempo: ${timeScript} ms`
+    );
+    await Sharing.shareAsync(fileUri2, { mimeType: 'text/plain', dialogTitle: 'Download do Log' });
+   
   }
 
   useEffect(() => {

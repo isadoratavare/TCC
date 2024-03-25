@@ -22,13 +22,15 @@ const MetricsContext = createContext<MetricsContextProps | undefined>(
 export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
     children,
 }) => {
-    const { getAutoCompleteList, getPlaceGeometry } = useMapsService();
+    const { getAutoCompleteList } = useMapsService();
 
     const { addImage } = useImageGallery() as ImageGalleryContextProps;
     const { addLocation } = useLocation() as LocationContextProps;
 
 
     const filePath = RNFS.ExternalDirectoryPath + '/data.txt';
+    const filePath2 = RNFS.ExternalDirectoryPath + '/script_rn.txt';
+
     async function getTimeData(markName: string, fn: () => void): Promise<number> {
         performance.mark(markName);
         await fn();
@@ -105,22 +107,30 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
     }
 
     async function addPinsFlow() {
-        var cidadesPernambuco = [
-            'Recife',
-            'Caruaru',
-            'Olinda',
-            'Garanhuns',
-            'Petrolina',
-            'Paulista',
-            'Jaboatão dos Guararapes',
-            'Cabo de Santo Agostinho',
-            'Camaragibe',
-            'Vitória de Santo Antão',
-        ];
-        for (let cidade of cidadesPernambuco) {
-            addPin(cidade);
-        }
+        const timeScript = await getTimeData("addPins", async () => {
+            var cidadesPernambuco = [
+                'Recife',
+                'Caruaru',
+                'Olinda',
+                'Garanhuns',
+                'Petrolina',
+                'Paulista',
+                'Jaboatão dos Guararapes',
+                'Cabo de Santo Agostinho',
+                'Camaragibe',
+                'Vitória de Santo Antão',
+            ];
+            for (let cidade of cidadesPernambuco) {
+                await addPin(cidade);
+            }
+        });
 
+        await RNFS.writeFile(filePath2, `Tempo: ${timeScript} ms`);
+        await Share.open({
+            url: 'file://' + filePath2,
+            type: 'application/txt',
+            saveToFiles: true,
+        });
     }
 
     useEffect(() => {

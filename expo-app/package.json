@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@types/react-native": "^0.73.0",
     "axios": "^1.6.1",
     "expo": "~49.0.15",
     "expo-camera": "~13.4.4",

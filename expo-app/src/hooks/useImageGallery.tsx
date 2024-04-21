@@ -2,7 +2,6 @@ import React, {
   ReactNode,
   createContext,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import * as ImagePicker from "expo-image-picker";
@@ -26,24 +25,14 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   );
   const [permission, setPermission] = useState<boolean>(false);
   const [permissionCamera, setPermissionCamera] = useState(false)
-  const { getTimeData, addNewValueToJSON } =
-    useMetrics() as MetricsContextProps;
 
   async function hasPermissionGallery() {
-    const timeInMilliseconds = await  getTimeData("getGalleryPermission", async () => {
       const permissionReq =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
       setPermission(permissionReq.status === "granted");
-    });
 
-    console.log("Gallery: ", timeInMilliseconds)
-
-    const content = JSON.stringify(timeInMilliseconds, null, 2);
-
-    addNewValueToJSON(content, "gallery");
   }
   async function hasPermissionCamera() {
-    const timeInMilliseconds = await getTimeData("getCameraPermission", async () => {
       let permission = await ImagePicker.getCameraPermissionsAsync();
 
       if (!permission.granted) {
@@ -51,11 +40,6 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
       }
 
       setPermissionCamera(permission.status === "granted");
-    });
-    console.log('Camera: ', timeInMilliseconds)
-    const content = JSON.stringify(timeInMilliseconds, null, 2);
-
-    addNewValueToJSON(content, "camera");
 
   }
   async function addImage(placeId: string, uri: string) {

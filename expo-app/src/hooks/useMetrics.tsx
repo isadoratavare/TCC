@@ -2,7 +2,7 @@ import { ReactNode, createContext, useContext, useEffect } from "react";
 import performance from "react-native-performance";
 import * as FileSystem from "expo-file-system";
 import { Alert } from "react-native";
-import * as Sharing from 'expo-sharing';
+import * as Sharing from "expo-sharing";
 import useMapsService from "../services/maps";
 import { LocationContextProps, useLocation } from "./useLocation";
 import { ImageGalleryContextProps, useImageGallery } from "./useImageGallery";
@@ -20,16 +20,18 @@ const MetricsContext = createContext<MetricsContextProps | undefined>(
 export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  const { getAutoCompleteList, getPlaceGeometry } = useMapsService();
 
-  const { getAutoCompleteList, getPlaceGeometry } = useMapsService()
-
-  const { addImage } = useImageGallery() as ImageGalleryContextProps
-  const { addLocation } = useLocation() as LocationContextProps
+  const { addImage } = useImageGallery() as ImageGalleryContextProps;
+  const { addLocation } = useLocation() as LocationContextProps;
 
   const fileUri = `${FileSystem.documentDirectory}expo_data.json`;
   const fileUri2 = `${FileSystem.documentDirectory}script_expo.json`;
 
-  async function getTimeData(markName: string, fn: () => void): Promise<number> {
+  async function getTimeData(
+    markName: string,
+    fn: () => void
+  ): Promise<number> {
     performance.mark(markName);
     await fn();
     performance.measure("myMeasure", markName);
@@ -39,7 +41,7 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   }
 
   async function createDataFile() {
-    const fileInfo = await FileSystem.getInfoAsync(fileUri)
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
 
     if (!fileInfo?.exists) {
       await FileSystem.writeAsStringAsync(fileUri, JSON.stringify({}));
@@ -47,11 +49,11 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
   }
 
   async function addNewValueToJSON(value: any, metric: string) {
-    let existingContent = '{}'
+    let existingContent = "{}";
     try {
       existingContent = await FileSystem.readAsStringAsync(fileUri);
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
 
     let existingObject: { [key: string]: any } = {};
@@ -59,7 +61,6 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
 
     let times = existingObject[metric]?.times || 0;
     if (times < 30) {
-
       try {
         times = existingObject?.times;
       } catch (error) {
@@ -73,29 +74,28 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
       existingObject[metric].data.push(value);
       existingObject[metric].times += 1;
 
-      Alert.alert("Coleta nº " + existingObject[metric].times)
+      Alert.alert("Coleta nº " + existingObject[metric].times);
 
       await FileSystem.writeAsStringAsync(
         fileUri,
         JSON.stringify(existingObject)
       );
-
-
-    }
-    else {
-      Alert.alert("Dados de ", metric + " coletados.")
-      const isLocationComplete = existingObject?.location?.times >= 30
-      const isCameraComplete = existingObject?.camera?.times >= 30
-      const isGalleryComplete = existingObject?.gallery?.times >= 30
+    } else {
+      Alert.alert("Dados de ", metric + " coletados.");
+      const isLocationComplete = existingObject?.location?.times >= 30;
+      const isCameraComplete = existingObject?.camera?.times >= 30;
+      const isGalleryComplete = existingObject?.gallery?.times >= 30;
 
       if (isLocationComplete && isCameraComplete && isGalleryComplete) {
-        Alert.alert("Valores captados", "Deseja baixar o arquivo?", [{
-          text: 'Baixar',
-          onPress: () => downloadJSON(),
-        }])
+        Alert.alert("Valores captados", "Deseja baixar o arquivo?", [
+          {
+            text: "Baixar",
+            onPress: () => downloadJSON(),
+          },
+        ]);
       }
 
-      return
+      return;
     }
   }
 
@@ -105,64 +105,82 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
       try {
         const leituraArquivo = await FileSystem.readAsStringAsync(fileUri);
         conteudoExistente = JSON.parse(leituraArquivo);
-      } catch (error) { }
+      } catch (error) {}
 
       const novoConteudo = { ...conteudoExistente };
 
       FileSystem.writeAsStringAsync(fileUri, JSON.stringify(novoConteudo));
-      await Sharing.shareAsync(fileUri, { mimeType: 'text/plain', dialogTitle: 'Download do Log' });
+      await Sharing.shareAsync(fileUri, {
+        mimeType: "text/plain",
+        dialogTitle: "Download do Log",
+      });
       const file = await FileSystem.writeAsStringAsync(
         fileUri,
         JSON.stringify(novoConteudo),
         {}
       );
 
-      console.log(file)
+      console.log(file);
     } catch (error) {
       console.error("Erro:", error);
     }
   };
 
   async function addPin(placeName: string) {
-    const image = "https://revistaazul.voeazul.com.br/wp-content/uploads/2023/03/Recife-1.jpg"
-    const autoComplete = await getAutoCompleteList(placeName)
+    const image =
+      "https://revistaazul.voeazul.com.br/wp-content/uploads/2023/03/Recife-1.jpg";
+    const autoComplete = await getAutoCompleteList(placeName);
     const placeId = autoComplete[0].id;
     await addLocation(placeId);
-    await addImage(placeId, image)
+    await addImage(placeId, image);
   }
 
-  async function addPinsFlow() {
-    console.log("Inicio do pontos")
+  const formatDateTime = (date: number) => {
+    const now = new Date(date);
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
 
-    const timeScript = await getTimeData("addPins", async () => {
-      var cidadesPernambuco = [
-        "Recife",
-        "Caruaru",
-        "Olinda",
-        "Garanhuns",
-        "Petrolina",
-        "Paulista",
-        "Jaboatão dos Guararapes",
-        "Cabo de Santo Agostinho",
-        "Camaragibe",
-        "Vitória de Santo Antão"
-      ];
-      for (let cidade of cidadesPernambuco) {
-        await addPin(cidade)
-      }
-    })
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+    const milliseconds = String(now.getMilliseconds()).padStart(3, "0"); // Milissegundos com 3 dígitos
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}.${milliseconds}`;
+  };
+
+  async function addPinsFlow() {
+    const init = `Tempo Inicio: ${formatDateTime(Date.now())}`;
+
+    var cidadesPernambuco = [
+      "Recife",
+      "Caruaru",
+      "Olinda",
+      "Garanhuns",
+      "Petrolina",
+      "Paulista",
+      "Jaboatão dos Guararapes",
+      "Cabo de Santo Agostinho",
+      "Camaragibe",
+      "Vitória de Santo Antão",
+    ];
+    for (let cidade of cidadesPernambuco) {
+      await addPin(cidade);
+    }
+
     await FileSystem.writeAsStringAsync(
-      fileUri2, 
-      `Tempo: ${timeScript} ms`
+      fileUri2,
+      `${init}\nTempo Fim: ${formatDateTime(Date.now())} ms\n`
     );
-    await Sharing.shareAsync(fileUri2, { mimeType: 'text/plain', dialogTitle: 'Download do Log' });
-   
+    await Sharing.shareAsync(fileUri2, {
+      mimeType: "text/plain",
+      dialogTitle: "Download do Log",
+    });
   }
 
   useEffect(() => {
-    addPinsFlow()
-  }, [])
-
+    addPinsFlow();
+  }, []);
 
   return (
     <MetricsContext.Provider

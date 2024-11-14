@@ -1,11 +1,10 @@
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react';
+import React, {  useState } from 'react';
 import {
   StyleSheet,
   View,
 } from 'react-native';
 import { LocationProvider } from './src/hooks/useLocation';
-import { enableLatestRenderer } from 'react-native-maps';
 import Map from './src/components/Map';
 import { Pin } from './src/@types/map';
 import { ImageGalleryProvider } from './src/hooks/useImageGallery';
@@ -13,7 +12,6 @@ import ModalBottom from './src/components/ModalBottom';
 import ImageGallery from './src/components/ImageGallery';
 import { MetricsProvider } from './src/hooks/useMetrics';
 
-enableLatestRenderer();
 
 function App(): React.JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);

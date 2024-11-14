@@ -6,7 +6,6 @@ function useMapsService() {
 
   async function getAutoCompleteList(input: string) {
     const response = await getAutoComplete(input);
-    console.log(response);
     const places = response?.predictions?.map(
       (prediction: {
         place_id: string;

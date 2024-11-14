@@ -127,7 +127,6 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
 
   async function addPinsFlow() {
     const init = `Tempo Inicio: ${formatDateTime(Date.now())}`;
-
     var cidadesPernambuco = [
       'Recife',
       'Caruaru',

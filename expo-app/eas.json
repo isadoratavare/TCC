@@ -25,7 +25,7 @@
         "buildType": "apk"
       },
       "env": {
-        "GOOGLE_MAPS_API_KEY": "AIzaSyD1knDAKWnd5-3R-MfZFIqL_vizI3DzkbI"
+        "GOOGLE_MAPS_API_KEY": ""
       }
     }
   },

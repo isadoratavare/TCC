@@ -28,7 +28,7 @@
       ],
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyD1knDAKWnd5-3R-MfZFIqL_vizI3DzkbI"
+          "apiKey": ""
         }
       },
       "package": "com.isadoratavare.expoapp"

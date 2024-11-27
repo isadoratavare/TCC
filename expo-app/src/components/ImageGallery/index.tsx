@@ -1,41 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
-import { FlatList, View, Image, Modal, Text } from "react-native";
+import React, { useState } from "react";
+import { FlatList, View, Image, Modal } from "react-native";
 import GalleryButton from "../GalleryButton";
 import {
   ImageGalleryContextProps,
   useImageGallery,
 } from "../../hooks/useImageGallery";
-import CameraView from "../CameraView";
-import { Camera } from "expo-camera";
 
-const ImageGallery: React.FC<{ placeId: string; openCamera: () => void }> = ({
-  placeId,
-}) => {
+const ImageGallery: React.FC<{ placeId: string }> = ({ placeId }) => {
   const [cameraOrGalleryModalOpen, setCameraOrGalleryModalOpen] =
     useState<boolean>(false);
-    const [permission, requestPermission] = Camera.useCameraPermissions();
-  const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
 
-  const { addImageByGallery, photos } =
+  const { addImageByGallery, photos, addImageByCamera } =
     useImageGallery() as ImageGalleryContextProps;
 
   const photosData = photos.filter((photo) => photo.id === placeId)[0];
-
-  useEffect(() => {
-    async function getPermission() {
-      if (isCameraOpen && permission?.status === 'undetermined') {
-        await requestPermission();
-      }
-    }
-    getPermission()
-  }, [isCameraOpen])
-
-
-  if (isCameraOpen && permission?.granted) {
-    return (
-      <CameraView placeId={placeId} onClose={() => setIsCameraOpen(false)}/>
-    );
-  }
 
   return (
     <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
@@ -102,9 +80,9 @@ const ImageGallery: React.FC<{ placeId: string; openCamera: () => void }> = ({
               <GalleryButton
                 icon="camera-alt"
                 name="Câmera"
-                onPress={ () => {
-                  setIsCameraOpen(true)
+                onPress={() => {
                   setCameraOrGalleryModalOpen(false);
+                  addImageByCamera(placeId);
                 }}
               />
             </View>

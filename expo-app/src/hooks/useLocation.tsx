@@ -1,9 +1,4 @@
-import {
-  createContext,
-  useContext,
-  ReactNode,
-  useState,
-} from "react";
+import { createContext, useContext, ReactNode, useState } from "react";
 import { Pin, Region } from "../@types/map";
 import useMapsService from "../services/maps";
 
@@ -27,7 +22,7 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
   const { getPlaceGeometry } = useMapsService();
 
   const addPin = (pin: Pin) => {
-    setPins(prevState => [...prevState, pin]);
+    setPins((prevState) => [...prevState, pin]);
   };
 
   async function addLocation(id: string) {
@@ -41,20 +36,27 @@ export const LocationProvider: React.FC<{ children: ReactNode }> = ({
     };
 
     const pin: Pin = {
-      place_id: geo?.id, 
+      place_id: geo?.id,
       latitude: geo?.latitude,
       longitude: geo?.longitude,
       latitudeDelta: geo?.latitudeDelta,
       longitudeDelta: geo?.longitudeDelta,
       label: geo?.name,
-    }
+    };
     addPin(pin);
     setInitialLocation(region);
   }
 
+  
+
   return (
     <LocationContext.Provider
-      value={{ pins, addPin, initialLocation, addLocation }}
+      value={{
+        pins,
+        addPin,
+        initialLocation,
+        addLocation,
+      }}
     >
       {children}
     </LocationContext.Provider>

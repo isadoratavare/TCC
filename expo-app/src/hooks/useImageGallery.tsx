@@ -1,11 +1,17 @@
-import React, { ReactNode, createContext, useContext, useState } from "react";
-import { Camera, CameraCapturedPicture } from "expo-camera";
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import * as ImagePicker from "expo-image-picker";
 
 export interface ImageGalleryContextProps {
   photos: { id: string; uris: string[] }[];
   addImageByGallery: (placeId: string) => void;
-  addImageByCamera: (placeId: string, photo: CameraCapturedPicture) => void;
+  addImageByCamera: (placeId: string) => void;
+  addImage: (placeId: string, uri: string) => void
 }
 
 const ImageGalleryContext = createContext<ImageGalleryContextProps | undefined>(
@@ -18,26 +24,36 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
   const [photoUri, setPhotoUri] = useState<{ id: string; uris: string[] }[]>(
     []
   );
+  const [permission, setPermission] = useState<boolean>(false);
+  const [permissionCamera, setPermissionCamera] = useState(false)
+
+
   async function hasPermissionGallery() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const permissionReq =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    setPermission(permissionReq.status === "granted");
 
-    return status === "granted";
   }
-  
-  async function addImage(placeId: string, uri: string) {
-    console.log("addImage", placeId, uri);
+  async function hasPermissionCamera() {
+    let permission = await ImagePicker.getCameraPermissionsAsync();
 
+    if (!permission.granted) {
+      permission = await ImagePicker.requestCameraPermissionsAsync();
+    }
+
+    setPermissionCamera(permission.status === "granted");
+
+  }
+  async function addImage(placeId: string, uri: string) {
     const existingIndex = photoUri.findIndex((item) => item.id === placeId);
 
     if (existingIndex !== -1) {
-      console.log(`Adding ${placeId}`);
       setPhotoUri((prevImageData) => {
         const updatedImageData = [...prevImageData];
         updatedImageData[existingIndex].uris.push(uri);
         return updatedImageData;
       });
     } else {
-      console.log(`Creating ${placeId}`);
       setPhotoUri((prevImageData) => [
         ...prevImageData,
         { id: placeId, uris: [uri] },
@@ -45,27 +61,31 @@ export const ImageGalleryProvider: React.FC<{ children: ReactNode }> = ({
     }
   }
   async function addImageByGallery(placeId: string) {
-    if (await hasPermissionGallery()) {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        quality: 1,
-      });
-      console.log(result);
+    await hasPermissionGallery()
+    if (permission) {
+      const result = await ImagePicker.launchImageLibraryAsync();
       if (!result.canceled) {
         addImage(placeId, result.assets[0].uri);
       }
     }
   }
-  async function addImageByCamera(
-    placeId: string,
-    photo: CameraCapturedPicture
-  ) {
-    addImage(placeId, photo.uri);
+  async function addImageByCamera(placeId: string) {
+    let photoUri;
+    await hasPermissionCamera()
+    if (permissionCamera) {
+       const photo = (await ImagePicker.launchCameraAsync({
+         aspect: [4, 3],
+         quality: 1,
+       })) as any;
+       photoUri = photo;
+    }
+    console.log(photoUri)
+    addImage(placeId, photoUri)
   }
+
   return (
     <ImageGalleryContext.Provider
-      value={{ addImageByGallery, photos: photoUri, addImageByCamera }}
+      value={{ addImageByGallery, photos: photoUri, addImageByCamera, addImage }}
     >
       {children}
     </ImageGalleryContext.Provider>

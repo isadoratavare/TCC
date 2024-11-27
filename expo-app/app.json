@@ -4,7 +4,6 @@
     "slug": "expo-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "resizeMode": "contain",
@@ -19,7 +18,20 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.CAMERA",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": ""
+        }
+      },
+      "package": "com.isadoratavare.expoapp"
     },
     "plugins": [
       [
@@ -27,7 +39,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
-      ], [
+      ],
+      [
         "expo-image-picker",
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
@@ -38,7 +51,24 @@
         {
           "cameraPermission": "Permita $(PRODUCT_NAME) o acesso a câmera."
         }
+      ],
+      [
+        "expo-updates",
+        {
+          "username": "isadoratavare"
+        }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "eeaed855-5b5a-4095-9373-cd0947a9646b"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/eeaed855-5b5a-4095-9373-cd0947a9646b"
+    }
   }
 }

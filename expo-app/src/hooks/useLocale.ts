@@ -2,10 +2,10 @@ import { useState } from "react";
 import * as Location from "expo-location";
 
 export type LocaleHook = {
-  location: Location.LocationObject | null,
-  errorMsg: string,
-  getLocaleAsync: () => void,
-}
+  location: Location.LocationObject | null;
+  errorMsg: string;
+  getLocaleAsync: () => void;
+};
 
 export default function useLocale(): LocaleHook {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -28,6 +28,6 @@ export default function useLocale(): LocaleHook {
   return {
     location,
     errorMsg,
-    getLocaleAsync
-  }
+    getLocaleAsync,
+  };
 }

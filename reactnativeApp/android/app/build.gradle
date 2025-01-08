@@ -3,6 +3,7 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
 react {
+   
 }
 
 def enableProguardInReleaseBuilds = false
@@ -14,9 +15,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.rnapp"
+    namespace "com.reactnativeapp"
     defaultConfig {
-        applicationId "com.rnapp"
+        applicationId "com.reactnativeapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -43,15 +44,15 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
 }
 
 dependencies {
-    
+    // The version of react-native is set by the React Native Gradle Plugin
     implementation project(':react-native-fs')
     implementation("com.facebook.react:react-android")
 

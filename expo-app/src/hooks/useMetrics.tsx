@@ -130,7 +130,7 @@ export const MetricsProvider: React.FC<{ children: ReactNode }> = ({
     const image =
       "https://revistaazul.voeazul.com.br/wp-content/uploads/2023/03/Recife-1.jpg";
     const autoComplete = await getAutoCompleteList(placeName);
-    const placeId = autoComplete[0].id;
+    const placeId = autoComplete[0]?.id;
     await addLocation(placeId);
     await addImage(placeId, image);
   }

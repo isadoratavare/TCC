@@ -36,7 +36,7 @@
         <!-- Android Key: https://console.cloud.google.com/apis/credentials?inv=1&invt=AbheSQ&project=tcc-project-404300 -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="" />
+            android:value="AIzaSyD1knDAKWnd5-3R-MfZFIqL_vizI3DzkbI" />
 
     </application>
 </manifest>
